@@ -7,8 +7,8 @@ CAN Analyzer는 네이버 !전자공작 카페(https://cafe.naver.com/circuitsma
 
 F/W 개발환경
 -
-+ STM32CubeIDE 1.5.0
-+ STM32CubeMX 6.0.1
++ STM32CubeIDE 1.7.0
++ STM32CubeMX 6.3.0
 
 <br>
 
