@@ -9,11 +9,12 @@ F/W 개발환경
 -
 + STM32CubeIDE 1.7.0
 + STM32CubeMX 6.3.0
++ STM32CubeH7 1.9.0
 
 <br>
 
 CAN Analyzer 보드 
 -
-STM32H723VG를 사용하고 상용 케이스에 맞게 PCB를 제작 중입니다. 
+STM32H743VIT를 사용하고 상용 케이스에 맞게 PCB를 제작 중입니다. 
 
 ![](https://github.com/chcbaram/CAN_Analyzer/blob/866d33f5354f5498c74390cb544feced8ada9b58/assets/image/can_bd.png)
