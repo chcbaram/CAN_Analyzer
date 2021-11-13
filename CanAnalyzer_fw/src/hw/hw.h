@@ -19,6 +19,8 @@ extern "C" {
 #include "uart.h"
 #include "log.h"
 #include "cli.h"
+#include "button.h"
+#include "gpio.h"
 
 
 bool hwInit(void);

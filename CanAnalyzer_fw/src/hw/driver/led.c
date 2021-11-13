@@ -28,7 +28,10 @@ typedef struct
 
 const led_tbl_t led_tbl[LED_MAX_CH] =
     {
-        {GPIOA, GPIO_PIN_1, GPIO_PIN_RESET, GPIO_PIN_SET},
+        {GPIOD, GPIO_PIN_9,  GPIO_PIN_RESET, GPIO_PIN_SET}, // LED_CAN1
+        {GPIOD, GPIO_PIN_8,  GPIO_PIN_RESET, GPIO_PIN_SET}, // LED_CAN2
+        {GPIOD, GPIO_PIN_14, GPIO_PIN_RESET, GPIO_PIN_SET}, // LED_MODE
+        {GPIOD, GPIO_PIN_15, GPIO_PIN_RESET, GPIO_PIN_SET}, // LED_RUN
     };
 
 
@@ -40,6 +43,7 @@ bool ledInit(void)
 
 
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
 
   for (int ch=0; ch<LED_MAX_CH; ch++)

@@ -22,8 +22,11 @@ bool hwInit(void)
   cliInit();
   logInit();
   ledInit();
+  buttonInit();
+  gpioInit();
   uartInit();
   uartOpen(_DEF_UART1, 115200);
+
 
   logOpen(_DEF_UART1, 115200);
   logPrintf("[ Firmware Begin... ]\r\n");

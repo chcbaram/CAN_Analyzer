@@ -32,6 +32,9 @@ void apMain(void)
       pre_time = millis();
 
       ledToggle(_DEF_LED1);
+      ledToggle(_DEF_LED2);
+      ledToggle(_DEF_LED3);
+      ledToggle(_DEF_LED4);
     }
 
     cliMain();
