@@ -16,7 +16,7 @@
 
 void apInit(void)
 {
-  cliOpen(_DEF_UART1, 115200);
+  cliOpen(_DEF_UART1, 4000000);
 }
 
 void apMain(void)
@@ -38,5 +38,9 @@ void apMain(void)
     }
 
     cliMain();
+
+    esp32Update();
   }
 }
+
+

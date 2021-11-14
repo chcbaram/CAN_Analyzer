@@ -21,6 +21,9 @@ extern "C" {
 #include "cli.h"
 #include "button.h"
 #include "gpio.h"
+#include "cdc.h"
+#include "usb.h"
+#include "esp32.h"
 
 
 bool hwInit(void);

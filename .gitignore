@@ -69,3 +69,5 @@ local.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/eclipse
 CanAnalyzer_fw/Debug/
+CanAnalyzer/Debug/
+cubemx_prj/CanAnalyzer/Debug/

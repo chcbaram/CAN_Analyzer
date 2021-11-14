@@ -26,6 +26,9 @@ uint32_t millis(void);
 
 void Error_Handler(void);
 
+void logPrintf(const char *fmt, ...);
+
+
 #ifdef __cplusplus
 }
 #endif
