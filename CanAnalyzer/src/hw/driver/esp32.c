@@ -31,7 +31,6 @@ static uint8_t req_boot_reset = 0;
 static bool req_set_baud   = false;
 
 static uint8_t  uart_down_ch  = _DEF_UART3;
-static uint8_t  uart_run_ch   = _DEF_UART4;
 static uint8_t  usb_ch        = _DEF_UART2;
 static uint32_t uart_baud_req = 115200;
 
@@ -58,7 +57,6 @@ void esp32Reset(bool boot)
   if (boot == true)
   {
     uartFlush(uart_down_ch);
-    uartFlush(uart_run_ch);
     uartFlush(usb_ch);
 
     gpioPinWrite(_PIN_GPIO_ESP_RST, _DEF_HIGH);
@@ -71,7 +69,6 @@ void esp32Reset(bool boot)
   else
   {
     uartFlush(uart_down_ch);
-    uartFlush(uart_run_ch);
     uartFlush(usb_ch);
 
     gpioPinWrite(_PIN_GPIO_ESP_RST, _DEF_HIGH);
@@ -140,27 +137,14 @@ void esp32Update(void)
   {
     req_set_baud = false;
 
-    if (is_download_mode == true)
+    if (uartGetBaud(uart_down_ch) != uart_baud_req)
     {
-      if (uartGetBaud(uart_down_ch) != uart_baud_req)
-      {
-        uartOpen(uart_down_ch, uart_baud_req);
-      }
-    }
-    else
-    {
-      if (usbGetType() == USB_CON_ESP)
-      {
-        if (uartGetBaud(uart_run_ch) != uart_baud_req)
-        {
-          uartOpen(uart_run_ch, uart_baud_req);
-        }
-      }
+      uartOpen(uart_down_ch, uart_baud_req);
     }
   }
 
 
-  if (is_download_mode == true)
+  if (is_download_mode == true || usbGetType() == USB_CON_ESP)
   {
     while(uartAvailable(uart_down_ch) > 0)
     {
@@ -172,23 +156,6 @@ void esp32Update(void)
     {
       data = uartRead(usb_ch);
       uartWrite(uart_down_ch, &data, 1);
-    }
-  }
-  else
-  {
-    if (usbGetType() == USB_CON_ESP)
-    {
-      while(uartAvailable(uart_run_ch) > 0)
-      {
-        data = uartRead(uart_run_ch);
-        uartWrite(usb_ch, &data, 1);
-      }
-
-      while(uartAvailable(usb_ch) > 0)
-      {
-        data = uartRead(usb_ch);
-        uartWrite(uart_run_ch, &data, 1);
-      }
     }
   }
 }
