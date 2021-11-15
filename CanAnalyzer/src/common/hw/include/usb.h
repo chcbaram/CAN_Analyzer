@@ -18,23 +18,30 @@ extern "C" {
 #ifdef _USE_HW_USB
 
 
-typedef enum
+typedef enum UsbMode
 {
   USB_NON_MODE,
   USB_CDC_MODE,
   USB_MSC_MODE
-} UsbMode;
+} usb_mode_t;
 
+typedef enum UsbType
+{
+  USB_CON_CDC = 0,
+  USB_CON_CAN = 1,
+  USB_CON_CLI = 2,
+  USB_CON_ESP = 3,
+} usb_type_t;
 
 
 bool usbInit(void);
-bool usbBegin(UsbMode usb_mode);
+bool usbBegin(usb_mode_t usb_mode);
 void usbDeInit(void);
 bool usbIsOpen(void);
 bool usbIsConnect(void);
 
-UsbMode usbGetMode(void);
-
+usb_mode_t usbGetMode(void);
+usb_type_t usbGetType(void);
 
 #endif
 

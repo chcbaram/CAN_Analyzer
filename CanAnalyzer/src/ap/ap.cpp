@@ -12,11 +12,13 @@
 
 
 
+uint8_t  cli_ch     = _DEF_UART_CLI;
+uint32_t cli_baud   = 115200;
 
 
 void apInit(void)
 {
-  cliOpen(_DEF_UART1, 4000000);
+  cliOpen(_DEF_UART_CLI, cli_baud);
 }
 
 void apMain(void)
@@ -37,8 +39,21 @@ void apMain(void)
       ledToggle(_DEF_LED4);
     }
 
-    cliMain();
+    if (usbIsOpen() && usbGetType() == USB_CON_CLI)
+    {
+      cli_ch = _DEF_UART_USB;
+    }
+    else
+    {
+      cli_ch = _DEF_UART_CLI;
+    }
 
+    if (cli_ch != cliGetChannel())
+    {
+      cliOpen(cli_ch, cli_baud);
+    }
+
+    cliMain();
     esp32Update();
   }
 }

@@ -161,6 +161,11 @@ bool cliOpenLog(uint8_t ch, uint32_t baud)
   return ret;
 }
 
+uint8_t cliGetChannel(void)
+{
+  return cli_node.ch;
+}
+
 bool cliLogClose(void)
 {
   cli_node.is_log = false;

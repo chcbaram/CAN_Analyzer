@@ -26,7 +26,7 @@
 
 
 static bool is_init = false;
-static UsbMode is_usb_mode = USB_NON_MODE;
+static usb_mode_t is_usb_mode = USB_NON_MODE;
 
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -82,13 +82,17 @@ bool usbIsConnect(void)
   return true;
 }
 
-
-UsbMode usbGetMode(void)
+usb_mode_t usbGetMode(void)
 {
   return is_usb_mode;
 }
 
-bool usbBegin(UsbMode usb_mode)
+usb_type_t usbGetType(void)
+{
+  return (usb_type_t)cdcGetType();
+}
+
+bool usbBegin(usb_mode_t usb_mode)
 {
   bool ret = false;
 

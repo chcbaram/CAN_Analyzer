@@ -12,6 +12,7 @@
 #include "gpio.h"
 #include "uart.h"
 #include "cli.h"
+#include "usb.h"
 
 
 #ifdef _USE_HW_ESP32
@@ -128,7 +129,6 @@ void esp32Update(void)
   if (req_boot_reset == ESP_RESET_RUN)
   {
     req_boot_reset = ESP_RESET_NONE;
-    esp32Reset(false);
   }
 
   if (req_set_baud == true)
@@ -144,9 +144,12 @@ void esp32Update(void)
     }
     else
     {
-      if (uartGetBaud(uart_run_ch) != uart_baud_req)
+      if (usbGetType() == USB_CON_ESP)
       {
-        uartOpen(uart_run_ch, uart_baud_req);
+        if (uartGetBaud(uart_run_ch) != uart_baud_req)
+        {
+          uartOpen(uart_run_ch, uart_baud_req);
+        }
       }
     }
   }
@@ -168,16 +171,19 @@ void esp32Update(void)
   }
   else
   {
-    while(uartAvailable(uart_run_ch) > 0)
+    if (usbGetType() == USB_CON_ESP)
     {
-      data = uartRead(uart_run_ch);
-      uartWrite(usb_ch, &data, 1);
-    }
+      while(uartAvailable(uart_run_ch) > 0)
+      {
+        data = uartRead(uart_run_ch);
+        uartWrite(usb_ch, &data, 1);
+      }
 
-    while(uartAvailable(usb_ch) > 0)
-    {
-      data = uartRead(usb_ch);
-      uartWrite(uart_run_ch, &data, 1);
+      while(uartAvailable(usb_ch) > 0)
+      {
+        data = uartRead(usb_ch);
+        uartWrite(uart_run_ch, &data, 1);
+      }
     }
   }
 }

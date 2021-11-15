@@ -48,7 +48,7 @@ static uint8_t q_tx_buf[2048];
 
 static bool is_opened = false;
 static bool is_rx_full = false;
-
+static uint8_t cdc_type = 0;
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -169,6 +169,11 @@ bool cdcIfIsConnected(void)
   return true;
 }
 
+uint8_t cdcIfGetType(void)
+{
+  return cdc_type;
+}
+
 uint8_t CDC_SoF_ISR(struct _USBD_HandleTypeDef *pdev)
 {
 
@@ -258,7 +263,7 @@ static int8_t CDC_DeInit_FS(void)
 static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 {
   USBD_SetupReqTypedef *req = (USBD_SetupReqTypedef *)pbuf;
-
+  uint32_t bitrate;
 
   switch(cmd)
   {
@@ -300,22 +305,26 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
     case CDC_SET_LINE_CODING:
-      LineCoding.bitrate   = (uint32_t)(pbuf[0]);
-      LineCoding.bitrate  |= (uint32_t)(pbuf[1]<<8);
-      LineCoding.bitrate  |= (uint32_t)(pbuf[2]<<16);
-      LineCoding.bitrate  |= (uint32_t)(pbuf[3]<<24);
+      bitrate   = (uint32_t)(pbuf[0]);
+      bitrate  |= (uint32_t)(pbuf[1]<<8);
+      bitrate  |= (uint32_t)(pbuf[2]<<16);
+      bitrate  |= (uint32_t)(pbuf[3]<<24);
       LineCoding.format    = pbuf[4];
       LineCoding.paritytype= pbuf[5];
       LineCoding.datatype  = pbuf[6];
+      LineCoding.bitrate   = bitrate - (bitrate%10);
 
+      cdc_type = bitrate % 10;
       esp32SetBaud(LineCoding.bitrate);
     break;
 
     case CDC_GET_LINE_CODING:
-      pbuf[0] = (uint8_t)(LineCoding.bitrate);
-      pbuf[1] = (uint8_t)(LineCoding.bitrate>>8);
-      pbuf[2] = (uint8_t)(LineCoding.bitrate>>16);
-      pbuf[3] = (uint8_t)(LineCoding.bitrate>>24);
+      bitrate = LineCoding.bitrate | cdc_type;
+
+      pbuf[0] = (uint8_t)(bitrate);
+      pbuf[1] = (uint8_t)(bitrate>>8);
+      pbuf[2] = (uint8_t)(bitrate>>16);
+      pbuf[3] = (uint8_t)(bitrate>>24);
       pbuf[4] = LineCoding.format;
       pbuf[5] = LineCoding.paritytype;
       pbuf[6] = LineCoding.datatype;

@@ -61,4 +61,9 @@ uint32_t cdcGetBaud(void)
   return cdcIfGetBaud();
 }
 
+uint8_t cdcGetType(void)
+{
+  return cdcIfGetType();
+}
+
 #endif

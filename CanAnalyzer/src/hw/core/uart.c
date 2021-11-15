@@ -16,6 +16,12 @@
  * _DEF_UART2
  *      USB CDC
  *
+ * _DEF_UART3
+ *      USART3
+ *
+ * _DEF_UART4
+ *      USART7
+ *
  */
 
 
@@ -151,6 +157,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       uart_tbl[ch].type    = UART_HW_TYPE_USB;
       uart_tbl[ch].baud    = baud;
       uart_tbl[ch].is_open = true;
+      ret = true;
       break;
   }
 
