@@ -101,7 +101,6 @@ void esp32RequestBoot(uint8_t param)
 
   if (param == 0x02) // 0 bit:DTR, 1 bit:RTS
   {
-    is_download_mode = false;
     req_boot_reset = ESP_RESET_RUN;
   }
 }
@@ -129,6 +128,12 @@ void esp32Update(void)
   if (req_boot_reset == ESP_RESET_RUN)
   {
     req_boot_reset = ESP_RESET_NONE;
+
+    if (is_download_mode == true)
+    {
+      is_download_mode = false;
+      esp32Reset(false);
+    }
   }
 
   if (req_set_baud == true)
