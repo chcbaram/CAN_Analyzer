@@ -37,6 +37,8 @@ bool hwInit(void)
   logPrintf("Booting..Ver  \t\t: %s\r\n", _DEF_FIRMWATRE_VERSION);
   logPrintf("Sys Clk       \t\t: %d Mhz\r\n", HAL_RCC_GetSysClockFreq()/1000000);
 
+  qspiInit();
+  flashInit();
   usbInit();
   usbBegin(USB_CDC_MODE);
 

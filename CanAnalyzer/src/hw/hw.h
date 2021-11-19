@@ -24,6 +24,8 @@ extern "C" {
 #include "cdc.h"
 #include "usb.h"
 #include "esp32.h"
+#include "qspi.h"
+#include "flash.h"
 
 
 bool hwInit(void);

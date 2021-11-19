@@ -11,7 +11,6 @@
 #include "ap.h"
 
 
-
 uint8_t  cli_ch     = _DEF_UART_CLI;
 uint32_t cli_baud   = 115200;
 

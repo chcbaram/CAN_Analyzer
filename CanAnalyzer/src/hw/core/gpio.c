@@ -32,6 +32,7 @@ const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
 
         {GPIOC, GPIO_PIN_4,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH},      // 2. ESP32_RST
         {GPIOC, GPIO_PIN_5,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW },      // 3. ESP32_BOOT
+        {GPIOB, GPIO_PIN_2,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },      // 3. ESP32_BOOT
     };
 
 
