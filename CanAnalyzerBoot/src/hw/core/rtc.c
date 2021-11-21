@@ -101,6 +101,8 @@ bool rtcInit(void)
   }
 
 
+  rtcWriteBackupData(_HW_DEF_RTC_RESET_SRC, resetGetBits());
+
   logPrintf("RTC     \t\t: OK\r\n");
   is_init = true;
 

@@ -84,7 +84,15 @@ bool bootVerifyCrc(void)
 
   if (p_firm_tag->magic_number != FLASH_MAGIC_NUMBER)
   {
-    return false;
+    if (p_firm_tag->magic_number == 0xAAAA5555)
+    {
+      logPrintf("downloaded from debugger\n");
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   p_data = (uint8_t *)p_firm_tag->tag_flash_start;
