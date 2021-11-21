@@ -13,13 +13,14 @@
 #include "bsp.h"
 
 
-#define _DEF_FIRMWATRE_VERSION    "V211112R1"
+#define _DEF_FIRMWATRE_VERSION    "V211121R1"
 #define _DEF_BOARD_NAME           "CanAnalyzer"
 
 
 #define _USE_HW_ESP32
 #define _USE_HW_QSPI
 #define _USE_HW_FLASH
+#define _USE_HW_RESET
 
 
 #define _USE_HW_LED
@@ -50,7 +51,15 @@
 #define      HW_USE_CDC             1
 #define      HW_USE_MSC             0
 
+#define _USE_HW_RTC
+#define      HW_RTC_CFG_DATA_1      RTC_BKP_DR1
+#define      HW_RTC_CFG_DATA_2      RTC_BKP_DR2
 
+
+
+#define _HW_DEF_RTC_BOOT_RESET      RTC_BKP_DR3
+#define _HW_DEF_RTC_BOOT_MODE       RTC_BKP_DR4
+#define _HW_DEF_RTC_RESET_SRC       RTC_BKP_DR5
 
 
 #define _DEF_UART_CLI               _DEF_UART1

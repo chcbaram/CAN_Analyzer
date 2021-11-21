@@ -26,6 +26,8 @@ extern "C" {
 #include "esp32.h"
 #include "qspi.h"
 #include "flash.h"
+#include "reset.h"
+#include "rtc.h"
 
 
 bool hwInit(void);

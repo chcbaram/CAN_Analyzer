@@ -23,7 +23,11 @@
 #include "usbd_cdc_if.h"
 #include "qbuffer.h"
 #include "esp32.h"
+#include "reset.h"
 
+
+
+const char *JUMP_BOOT_STR = "BOOT 5555AAAA";
 
 
 USBD_CDC_LineCodingTypeDef LineCoding =
@@ -35,6 +39,7 @@ USBD_CDC_LineCodingTypeDef LineCoding =
     };
 
 
+uint8_t CDC_Reset_Status = 0;
 uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
@@ -316,6 +321,11 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 
       cdc_type = bitrate % 10;
       esp32SetBaud(LineCoding.bitrate);
+
+      if( LineCoding.bitrate == 1200 )
+      {
+        CDC_Reset_Status = 1;
+      }
     break;
 
     case CDC_GET_LINE_CODING:
@@ -369,8 +379,28 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   */
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
+  uint32_t i;
+
+
   qbufferWrite(&q_rx, Buf, *Len);
 
+  if( CDC_Reset_Status == 1 )
+  {
+    CDC_Reset_Status = 0;
+
+    if( *Len >= 13 )
+    {
+      for(i=0; i<13; i++ )
+      {
+        if( JUMP_BOOT_STR[i] != Buf[i] ) break;
+      }
+
+      if( i == 13 )
+      {
+        resetToBoot(0);
+      }
+    }
+  }
 
   uint32_t buf_len;
 

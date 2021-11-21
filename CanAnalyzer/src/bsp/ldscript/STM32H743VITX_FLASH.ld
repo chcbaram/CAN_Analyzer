@@ -44,25 +44,43 @@ _Min_Stack_Size = 0x400 ; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-  FLASH (rx)     : ORIGIN = 0x08000000, LENGTH = 2048K
-  DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
-  RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
-  RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
-  RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
-  ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
+  TAG     (rx)    : ORIGIN = 0x08040000, LENGTH = 1K
+  FLASH   (rx)    : ORIGIN = 0x08040400, LENGTH = 767K
+  
+  DTCMRAM (xrw)   : ORIGIN = 0x20000000, LENGTH = 128K
+  RAM_D1  (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
+  RAM_D2  (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
+  RAM_D3  (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
+  ITCMRAM (xrw)   : ORIGIN = 0x00000000, LENGTH = 64K
 }
 
 /* Define output sections */
 SECTIONS
 {
+  .tag :
+  {
+    . = ALIGN(4);
+    _flash_tag_addr = .;
+    KEEP(*(.tag)) 
+    . = ALIGN(4);
+  } >TAG
+  
   /* The startup code goes first into FLASH */
   .isr_vector :
   {
     . = ALIGN(4);
+    __isr_vector_addr = .;    
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
 
+  .version :
+  {
+    . = ALIGN(1024);
+    KEEP(*(.version)) 
+    . = ALIGN(4);
+  } >FLASH
+  
   /* The program code and other data goes into FLASH */
   .text :
   {
