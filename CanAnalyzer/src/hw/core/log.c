@@ -42,9 +42,9 @@ static bool is_open = false;
 static uint8_t  log_ch = LOG_CH;
 static uint32_t log_baud = 57600;
 
-static char print_buf[256];
+static __attribute__((section(".non_cache"))) char print_buf[256];
 
-#ifdef _USE_HW_ROTS
+#ifdef _USE_HW_RTOS
 static osMutexId mutex_lock;
 #endif
 
@@ -60,7 +60,7 @@ static void cliCmd(cli_args_t *args);
 
 bool logInit(void)
 {
-#ifdef _USE_HW_ROTS
+#ifdef _USE_HW_RTOS
   osMutexDef(mutex_lock);
   mutex_lock = osMutexCreate (osMutex(mutex_lock));
 #endif
@@ -147,7 +147,7 @@ bool logBufPrintf(log_buf_t *p_log, char *p_data, uint32_t length)
 
 void logPrintf(const char *fmt, ...)
 {
-#ifdef _USE_HW_ROTS
+#ifdef _USE_HW_RTOS
   osMutexWait(mutex_lock, osWaitForever);
 #endif
 
@@ -173,7 +173,7 @@ void logPrintf(const char *fmt, ...)
 
   va_end(args);
 
-#ifdef _USE_HW_ROTS
+#ifdef _USE_HW_RTOS
   osMutexRelease(mutex_lock);
 #endif
 }
@@ -215,14 +215,14 @@ void cliCmd(cli_args_t *args)
         buf_len = 64;
       }
 
-      #ifdef _USE_HW_ROTS
+      #ifdef _USE_HW_RTOS
       osMutexWait(mutex_lock, osWaitForever);
       #endif
 
       cliWrite((uint8_t *)&log_buf_boot.buf[index], buf_len);
       index += buf_len;
 
-      #ifdef _USE_HW_ROTS
+      #ifdef _USE_HW_RTOS
       osMutexRelease(mutex_lock);
       #endif
     }
@@ -247,14 +247,14 @@ void cliCmd(cli_args_t *args)
         buf_len = 64;
       }
 
-      #ifdef _USE_HW_ROTS
+      #ifdef _USE_HW_RTOS
       osMutexWait(mutex_lock, osWaitForever);
       #endif
 
       cliWrite((uint8_t *)&log_buf_list.buf[index], buf_len);
       index += buf_len;
 
-      #ifdef _USE_HW_ROTS
+      #ifdef _USE_HW_RTOS
       osMutexRelease(mutex_lock);
       #endif
 

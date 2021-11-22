@@ -9,7 +9,7 @@
 
 
 #include "bsp.h"
-
+#include "hw_def.h"
 
 
 static void SystemClock_Config(void);
@@ -37,9 +37,20 @@ bool bspInit(void)
   return true;
 }
 
-void delay(uint32_t time_ms)
+void delay(uint32_t ms)
 {
-  HAL_Delay(time_ms);
+#ifdef _USE_HW_RTOS
+  if (xTaskGetSchedulerState() != taskSCHEDULER_NOT_STARTED)
+  {
+    osDelay(ms);
+  }
+  else
+  {
+    HAL_Delay(ms);
+  }
+#else
+  HAL_Delay(ms);
+#endif
 }
 
 uint32_t millis(void)

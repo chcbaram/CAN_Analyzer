@@ -89,6 +89,14 @@ bool uartOpen(uint8_t ch, uint32_t baud)
   bool ret = false;
 
 
+  if (uart_tbl[ch].is_open == true)
+  {
+    if (uart_tbl[ch].baud == baud)
+    {
+      return true;
+    }
+  }
+
   switch(ch)
   {
 
@@ -166,6 +174,7 @@ bool uartOpen(uint8_t ch, uint32_t baud)
 
 bool uartClose(uint8_t ch)
 {
+  uart_tbl[ch].is_open = false;
   return true;
 }
 

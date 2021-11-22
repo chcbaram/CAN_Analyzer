@@ -17,11 +17,30 @@
 #define _DEF_BOARD_NAME           "CanAnalyzer"
 
 
+
+#define _HW_DEF_RTOS_MEM_SIZE(x)              ((x)/4)
+
+
+#define _HW_DEF_RTOS_THREAD_PRI_MAIN          osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_CLI           osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_LED           osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_EVENT         osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_INFO          osPriorityNormal
+
+
+#define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_CLI           _HW_DEF_RTOS_MEM_SIZE( 6*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_LED           _HW_DEF_RTOS_MEM_SIZE(    256)
+#define _HW_DEF_RTOS_THREAD_MEM_EVENT         _HW_DEF_RTOS_MEM_SIZE( 2*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_INFO          _HW_DEF_RTOS_MEM_SIZE(    512)
+
+
+
 #define _USE_HW_ESP32
 #define _USE_HW_QSPI
 #define _USE_HW_FLASH
 #define _USE_HW_RESET
-
+#define _USE_HW_RTOS
 
 #define _USE_HW_LED
 #define      HW_LED_MAX_CH          4
@@ -54,6 +73,10 @@
 #define _USE_HW_RTC
 #define      HW_RTC_CFG_DATA_1      RTC_BKP_DR1
 #define      HW_RTC_CFG_DATA_2      RTC_BKP_DR2
+
+#define _USE_HW_FS
+#define      HW_FS_MAX_SIZE         (8*1024*1024)
+
 
 
 

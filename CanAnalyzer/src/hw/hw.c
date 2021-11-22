@@ -41,9 +41,6 @@ __attribute__((section(".version"))) firm_version_t firm_ver =
 
 bool hwInit(void)
 {
-  bspInit();
-
-
   resetInit();
   cliInit();
   logInit();
@@ -69,6 +66,7 @@ bool hwInit(void)
   resetLog();
   qspiInit();
   flashInit();
+  fsInit();
   usbInit();
   usbBegin(USB_CDC_MODE);
 

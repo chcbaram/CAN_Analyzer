@@ -103,7 +103,7 @@ static bool cliParseArgs(cli_t *p_cli);
 static int32_t  cliArgsGetData(uint8_t index);
 static float    cliArgsGetFloat(uint8_t index);
 static char    *cliArgsGetStr(uint8_t index);
-static bool     cliArgsIsStr(uint8_t index, char *p_str);
+static bool     cliArgsIsStr(uint8_t index, const char *p_str);
 
 
 void cliShowList(cli_args_t *args);
@@ -138,9 +138,13 @@ bool cliInit(void)
 bool cliOpen(uint8_t ch, uint32_t baud)
 {
   cli_node.ch = ch;
-  cli_node.baud = baud;
 
-  cli_node.is_open = uartOpen(ch, baud);
+
+  if (cli_node.is_open == false || cli_node.baud != baud)
+  {
+    cli_node.baud = baud;
+    cli_node.is_open = uartOpen(ch, baud);
+  }
 
   return cli_node.is_open;
 }
@@ -652,7 +656,7 @@ char *cliArgsGetStr(uint8_t index)
   return ret;
 }
 
-bool cliArgsIsStr(uint8_t index, char *p_str)
+bool cliArgsIsStr(uint8_t index, const char *p_str)
 {
   bool ret = false;
   cli_t *p_cli = &cli_node;

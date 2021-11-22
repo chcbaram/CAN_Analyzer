@@ -28,6 +28,7 @@ extern "C" {
 #include "flash.h"
 #include "reset.h"
 #include "rtc.h"
+#include "fs.h"
 
 
 bool hwInit(void);

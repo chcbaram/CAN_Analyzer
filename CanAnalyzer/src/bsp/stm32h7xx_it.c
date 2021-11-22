@@ -83,9 +83,11 @@ void UsageFault_Handler(void)
 /**
   * @brief This function handles System service call via SWI instruction.
   */
+#if 0
 void SVC_Handler(void)
 {
 }
+#endif
 
 /**
   * @brief This function handles Debug monitor.
@@ -97,17 +99,22 @@ void DebugMon_Handler(void)
 /**
   * @brief This function handles Pendable request for system service.
   */
+#if 0
 void PendSV_Handler(void)
 {
 
 }
+#endif
+
+extern void osSystickHandler(void);
 
 /**
   * @brief This function handles System tick timer.
   */
 void SysTick_Handler(void)
 {
-  HAL_IncTick();
+  //HAL_IncTick();
+  osSystickHandler();
 }
 
 

@@ -16,7 +16,7 @@ extern "C" {
 
 
 #include "stm32h7xx_hal.h"
-
+#include "rtos.h"
 
 bool bspInit(void);
 bool bspDeInit(void);
