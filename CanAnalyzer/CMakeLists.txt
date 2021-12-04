@@ -34,19 +34,31 @@ project(${PRJ_NAME}
 
 set(EXECUTABLE ${PRJ_NAME}.elf)
 
-file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
-  src/ap/*.cpp
+
+file(GLOB SRC_FILES CONFIGURE_DEPENDS
   src/bsp/*.c
+  src/bsp/FreeRTOS/*.c
+  src/bsp/FreeRTOS/Source/*.c
+  src/bsp/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1/*.c
+  src/bsp/FreeRTOS/Source/CMSIS_RTOS/*.c
+)
+
+file(GLOB_RECURSE SRC_FILES_RECURSE CONFIGURE_DEPENDS
+  src/ap/*.cpp
+  src/bsp/cmsis/*.c
   src/common/*.c
   src/hw/*.c
   src/lib/STM32H7xx_HAL_Driver/Src/*.c
+  src/lib/littlefs/*.c
 )
-add_executable(${EXECUTABLE}
-  
+
+add_executable(${EXECUTABLE} 
   src/main.cpp
   src/bsp/startup/startup_stm32h743vitx.s
 
+  src/bsp/FreeRTOS/Source/portable/MemMang/heap_4.c
   ${SRC_FILES}
+  ${SRC_FILES_RECURSE}
 )
 
 
@@ -59,7 +71,12 @@ target_include_directories(${EXECUTABLE} PRIVATE
   src/common/core
   src/common/hw/include 
   src/hw
+  src/lib
 
+  src/bsp/FreeRTOS
+  src/bsp/FreeRTOS/Source/CMSIS_RTOS
+  src/bsp/FreeRTOS/Source/include
+  src/bsp/FreeRTOS/Source/portable/GCC/ARM_CM7/r0p1
   src/hw/core/usb
   src/hw/core/usb/core
   src/hw/core/usb/usb_cdc
@@ -71,6 +88,7 @@ target_include_directories(${EXECUTABLE} PRIVATE
 target_compile_definitions(${EXECUTABLE} PRIVATE
   -DSTM32H743xx 
   -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS
+  -DLFS_THREADSAFE
   )
 
 target_compile_options(${EXECUTABLE} PRIVATE
