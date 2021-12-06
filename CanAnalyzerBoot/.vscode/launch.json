@@ -2,8 +2,8 @@
   "configurations": [
   {
     "cwd": "${workspaceRoot}",
-    "executable": "./build/CanAnalyzer.elf",
-    "name": "Debug CanAnalyzer",
+    "executable": "./build/CanAnalyzerBoot.elf",
+    "name": "Debug CanAnalyzerBoot",
     "request": "launch",
     "type": "cortex-debug",
     "showDevDebugOutput": false,
