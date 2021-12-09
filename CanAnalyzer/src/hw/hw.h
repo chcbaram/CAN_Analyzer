@@ -29,6 +29,7 @@ extern "C" {
 #include "reset.h"
 #include "rtc.h"
 #include "fs.h"
+#include "can.h"
 
 
 bool hwInit(void);

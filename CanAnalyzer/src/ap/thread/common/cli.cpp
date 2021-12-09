@@ -55,6 +55,8 @@ void cliThread(void const *argument)
 
 
   cliOpen(_DEF_UART_CLI, cli_baud);
+  canOpen(_DEF_CAN1, CAN_NORMAL, CAN_CLASSIC, CAN_1M, CAN_2M);
+  canOpen(_DEF_CAN2, CAN_NORMAL, CAN_CLASSIC, CAN_1M, CAN_2M);
 
   while(1)
   {

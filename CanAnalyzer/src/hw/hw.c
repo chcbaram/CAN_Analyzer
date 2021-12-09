@@ -71,7 +71,8 @@ bool hwInit(void)
   usbBegin(USB_CDC_MODE);
 
   esp32Init();
-
+  canInit();
+  
   logBoot(false);
 
   return true;

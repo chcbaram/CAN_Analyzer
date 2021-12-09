@@ -99,6 +99,12 @@ target_link_options(${EXECUTABLE} PRIVATE
   )
 
 
+add_custom_command(TARGET ${EXECUTABLE} 
+    POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} ARGS -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin
+    COMMENT "Invoking: Make Binary"
+    )
+
 #set_target_properties(${EXECUTABLE} PROPERTIES SUFFIX ".elf")
 #add_custom_command(TARGET ${EXECUTABLE} POST_BUILD
 #        COMMAND arm-none-eabi-size --format=berkeley --totals "$<TARGET_FILE:${EXECUTABLE}>"
