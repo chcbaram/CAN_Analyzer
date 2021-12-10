@@ -11,7 +11,7 @@
 #include "thread.h"
 #include "common/info.h"
 #include "common/cli.h"
-
+#include "display/lcd.h"
 
 
 static const char *thread_name = "Dummy       ";
@@ -62,6 +62,7 @@ bool threadInit(void)
 
   ret &= infoThreadInit(&thread_list[THREAD_ID_INFO]);
   ret &= cliThreadInit(&thread_list[THREAD_ID_CLI]);
+  ret &= lcdThreadInit(&thread_list[THREAD_ID_LCD]);
 
   return ret;
 }

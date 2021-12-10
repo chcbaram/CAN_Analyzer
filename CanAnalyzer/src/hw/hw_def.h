@@ -26,13 +26,14 @@
 #define _HW_DEF_RTOS_THREAD_PRI_LED           osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_EVENT         osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_INFO          osPriorityNormal
-
+#define _HW_DEF_RTOS_THREAD_PRI_LCD           osPriorityNormal
 
 #define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CLI           _HW_DEF_RTOS_MEM_SIZE( 6*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_LED           _HW_DEF_RTOS_MEM_SIZE(    256)
 #define _HW_DEF_RTOS_THREAD_MEM_EVENT         _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_INFO          _HW_DEF_RTOS_MEM_SIZE(    512)
+#define _HW_DEF_RTOS_THREAD_MEM_LCD           _HW_DEF_RTOS_MEM_SIZE( 1*1024)
 
 
 
@@ -52,7 +53,10 @@
 #define      HW_BUTTON_MAX_CH       1
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         6
+#define      HW_GPIO_MAX_CH         10
+
+#define _USE_HW_SPI
+#define      HW_SPI_MAX_CH          1
 
 #define _USE_HW_CAN
 #define      HW_CAN_MAX_CH          2
@@ -81,6 +85,13 @@
 #define _USE_HW_FS
 #define      HW_FS_MAX_SIZE         (8*1024*1024)
 
+#define _USE_HW_LCD     
+#define      HW_LCD_LVGL
+
+#define _USE_HW_ST7735
+#define      HW_ST7735_MODEL        0
+#define      HW_LCD_WIDTH           160
+#define      HW_LCD_HEIGHT          80
 
 
 
@@ -97,6 +108,11 @@
 
 #define _PIN_GPIO_ESP_RST           2
 #define _PIN_GPIO_ESP_BOOT          3
+
+#define _PIN_GPIO_LCD_RST           6
+#define _PIN_GPIO_LCD_BLK           7
+#define _PIN_GPIO_LCD_CS            8
+#define _PIN_GPIO_LCD_DC            9
 
 
 

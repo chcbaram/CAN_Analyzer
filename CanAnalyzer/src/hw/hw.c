@@ -72,6 +72,8 @@ bool hwInit(void)
 
   esp32Init();
   canInit();
+  spiInit();
+  lcdInit();
   
   logBoot(false);
 

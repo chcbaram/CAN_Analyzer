@@ -105,6 +105,9 @@ typedef struct
   can_baud_t  baud;
   can_baud_t  baud_data;
 
+  uint32_t rx_cnt;
+  uint32_t tx_cnt;
+
   FDCAN_HandleTypeDef  hfdcan;
   bool (*handler)(can_msg_t *arg);
 
@@ -146,6 +149,9 @@ bool canInit(void)
     can_tbl[i].q_tx_full_cnt = 0;
     can_tbl[i].fifo_full_cnt = 0;
     can_tbl[i].fifo_lost_cnt = 0;
+
+    can_tbl[i].rx_cnt = 0;
+    can_tbl[i].tx_cnt = 0;
 
     qbufferCreateBySize(&can_tbl[i].q_msg, (uint8_t *)&can_tbl[i].can_msg[0], sizeof(can_msg_t), CAN_MSG_RX_BUF_MAX);
   }
@@ -364,7 +370,7 @@ bool canConfigFilter(uint8_t ch, uint8_t index, can_id_type_t id_type, uint32_t 
 
 uint32_t canMsgAvailable(uint8_t ch)
 {
-  if(ch > CAN_MAX_CH) return 0;
+  if(ch >= CAN_MAX_CH) return 0;
 
   return qbufferAvailable(&can_tbl[ch].q_msg);
 }
@@ -454,6 +460,10 @@ bool canMsgWrite(uint8_t ch, can_msg_t *p_msg, uint32_t timeout)
     ret = false;
   }
 
+  if (ret == true)
+  {
+    can_tbl[ch].tx_cnt++;
+  }
   return ret;
 }
 
@@ -462,7 +472,7 @@ bool canMsgRead(uint8_t ch, can_msg_t *p_msg)
   bool ret = true;
 
 
-  if(ch > CAN_MAX_CH) return 0;
+  if(ch >= CAN_MAX_CH) return 0;
 
   ret = qbufferRead(&can_tbl[ch].q_msg, (uint8_t *)p_msg, 1);
 
@@ -492,7 +502,7 @@ uint16_t canGetTxErrCount(uint8_t ch)
   HAL_StatusTypeDef status;
   FDCAN_ErrorCountersTypeDef error_counters;
 
-  if(ch > CAN_MAX_CH) return 0;
+  if(ch >= CAN_MAX_CH) return 0;
 
   status = HAL_FDCAN_GetErrorCounters(&can_tbl[ch].hfdcan, &error_counters);
   if (status == HAL_OK)
@@ -505,35 +515,49 @@ uint16_t canGetTxErrCount(uint8_t ch)
 
 uint32_t canGetError(uint8_t ch)
 {
-  if(ch > CAN_MAX_CH) return 0;
+  if(ch >= CAN_MAX_CH) return 0;
 
   return HAL_FDCAN_GetError(&can_tbl[ch].hfdcan);
 }
 
+uint32_t canGetRxCount(uint8_t ch)
+{
+  if(ch >= CAN_MAX_CH) return 0;
+
+  return can_tbl[ch].rx_cnt;
+}
+
+uint32_t canGetTxCount(uint8_t ch)
+{
+  if(ch >= CAN_MAX_CH) return 0;
+
+  return can_tbl[ch].tx_cnt;
+}
+
 uint32_t canGetState(uint8_t ch)
 {
-  if(ch > CAN_MAX_CH) return 0;
+  if(ch >= CAN_MAX_CH) return 0;
 
   return HAL_FDCAN_GetState(&can_tbl[ch].hfdcan);
 }
 
 void canAttachRxInterrupt(uint8_t ch, bool (*handler)(can_msg_t *arg))
 {
-  if(ch > CAN_MAX_CH) return;
+  if(ch >= CAN_MAX_CH) return;
 
   can_tbl[ch].handler = handler;
 }
 
 void canDetachRxInterrupt(uint8_t ch)
 {
-  if(ch > CAN_MAX_CH) return;
+  if(ch >= CAN_MAX_CH) return;
 
   can_tbl[ch].handler = NULL;
 }
 
 void canRecovery(uint8_t ch)
 {
-  if(ch > CAN_MAX_CH) return;
+  if(ch >= CAN_MAX_CH) return;
 
   HAL_FDCAN_Stop(&can_tbl[ch].hfdcan);
   HAL_FDCAN_Start(&can_tbl[ch].hfdcan);
@@ -614,6 +638,8 @@ void canRxFifoCallback(uint8_t ch, FDCAN_HandleTypeDef *hfdcan)
       rx_buf->frame = CAN_CLASSIC;
     }
 
+    can_tbl[ch].rx_cnt++;
+
     if (qbufferWrite(&can_tbl[ch].q_msg, NULL, 1) != true)
     {
       can_tbl[ch].q_rx_full_cnt++;
@@ -631,7 +657,7 @@ void canRxFifoCallback(uint8_t ch, FDCAN_HandleTypeDef *hfdcan)
 
 void canErrClear(uint8_t ch)
 {
-  if(ch > CAN_MAX_CH) return;
+  if(ch >= CAN_MAX_CH) return;
 
   can_tbl[ch].err_code = CAN_ERR_NONE;
 }
@@ -641,7 +667,7 @@ void canErrPrint(uint8_t ch)
   uint32_t err_code;
 
 
-  if(ch > CAN_MAX_CH) return;
+  if(ch >= CAN_MAX_CH) return;
 
   err_code = can_tbl[ch].err_code;
 

@@ -47,6 +47,7 @@ typedef enum
 {
   THREAD_ID_INFO,
   THREAD_ID_CLI,
+  THREAD_ID_LCD,
   THREAD_ID_MAX
 } ThreadId_t;
 

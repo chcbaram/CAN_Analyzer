@@ -30,6 +30,8 @@ extern "C" {
 #include "rtc.h"
 #include "fs.h"
 #include "can.h"
+#include "spi.h"
+#include "lcd.h"
 
 
 bool hwInit(void);

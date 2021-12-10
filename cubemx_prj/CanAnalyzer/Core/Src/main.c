@@ -23,6 +23,7 @@
 #include "fdcan.h"
 #include "quadspi.h"
 #include "rtc.h"
+#include "spi.h"
 #include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
@@ -100,6 +101,7 @@ int main(void)
   MX_RTC_Init();
   MX_FDCAN1_Init();
   MX_FDCAN2_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */

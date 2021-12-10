@@ -34,6 +34,13 @@ const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
         {GPIOC, GPIO_PIN_5,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW },      // 3. ESP32_BOOT
         {GPIOA, GPIO_PIN_2,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 4. CAN1_TML
         {GPIOA, GPIO_PIN_3,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 5. CAN2_TML
+
+        {GPIOD, GPIO_PIN_1,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 6. LCD_RST
+        {GPIOC, GPIO_PIN_8,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 7. LCD_BLK
+        {GPIOD, GPIO_PIN_2,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 8. LCD_CS
+        {GPIOC, GPIO_PIN_9,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 9. LCD_DC
+
+
     };
 
 
@@ -52,7 +59,7 @@ bool gpioInit(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
-
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   for (int i=0; i<GPIO_MAX_CH; i++)
   {

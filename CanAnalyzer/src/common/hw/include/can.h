@@ -112,6 +112,8 @@ bool     canMsgRead(uint8_t ch, can_msg_t *p_msg);
 
 uint16_t canGetRxErrCount(uint8_t ch);
 uint16_t canGetTxErrCount(uint8_t ch);
+uint32_t canGetRxCount(uint8_t ch);
+uint32_t canGetTxCount(uint8_t ch);
 uint32_t canGetError(uint8_t ch);
 uint32_t canGetState(uint8_t ch);
 
