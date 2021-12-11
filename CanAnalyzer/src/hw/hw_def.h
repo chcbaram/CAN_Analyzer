@@ -13,7 +13,7 @@
 #include "bsp.h"
 
 
-#define _DEF_FIRMWATRE_VERSION    "V211121R1"
+#define _DEF_FIRMWATRE_VERSION    "V211211R1"
 #define _DEF_BOARD_NAME           "CanAnalyzer"
 
 
