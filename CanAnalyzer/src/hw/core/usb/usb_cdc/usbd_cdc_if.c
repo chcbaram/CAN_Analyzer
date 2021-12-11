@@ -348,7 +348,10 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
       if (req->wValue == 0x02)
         is_opened = false;
 
-      esp32RequestBoot(req->wValue);
+      if (cdc_type == 0 && LineCoding.bitrate > 57600)
+      {
+        esp32RequestBoot(req->wValue);
+      }
     break;
 
     case CDC_SEND_BREAK:

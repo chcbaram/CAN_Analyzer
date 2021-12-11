@@ -133,6 +133,11 @@ void cmdBusThread(void const *argument)
     if (millis()-pre_time >= 1000)
     {
       pre_time = millis();
+    }
+
+    if (cmdCanReceivePacket(&cmd_can) == true)
+    {
+      cmdBusPrintPacket(&cmd_can.rx_packet);
 
       cmd_can_packet_t *p_pkt = &cmd_can.tx_packet;
 
@@ -143,13 +148,9 @@ void cmdBusThread(void const *argument)
       p_pkt->data[0] = 0;
       p_pkt->data[1] = 1;
 
-      //cmdCanSendCmdPacket(&cmd_can, p_pkt);
+      cmdCanSendCmdPacket(&cmd_can, p_pkt);  
     }
 
-    if (cmdCanReceivePacket(&cmd_can) == true)
-    {
-      cmdBusPrintPacket(&cmd_can.rx_packet);
-    }
     delay(2);
     thread->hearbeat++;
   }
