@@ -23,12 +23,13 @@ typedef enum
   THREAD_ID_CLI,
   THREAD_ID_LCD,
   THREAD_ID_CAN_BUS,
+  THREAD_ID_CMD_BUS,
   THREAD_ID_MAX
 } ThreadId_t;
 
 
 
-typedef struct thread_t_ threat_t;
+typedef struct thread_t_ thread_t;
 
 typedef struct thread_t_
 {
@@ -39,11 +40,10 @@ typedef struct thread_t_
   uint32_t freq;
   uint32_t hearbeat;
 
-  threat_t *list;
+  thread_t *list;
 
+  bool (*init)(thread_t *p_thread);
   bool (*notify)(Event_t event);
-
-
   bool (*onEvent)(Event_t event);
 
 } thread_t;

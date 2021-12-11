@@ -13,6 +13,7 @@
 #include "common/cli.h"
 #include "display/lcd.h"
 #include "manage/can_bus.h"
+#include "manage/cmd_bus.h"
 
 
 namespace ap
@@ -46,7 +47,8 @@ bool threadInit(void)
     thread_list[i].freq = 0;
     thread_list[i].hearbeat = 0;
 
-    thread_list[i].notify = threadNotify;
+    thread_list[i].init    = NULL;
+    thread_list[i].notify  = threadNotify;
     thread_list[i].onEvent = NULL;
   }
 
@@ -65,10 +67,20 @@ bool threadInit(void)
     logPrintf("threadEvent \t\t: Fail\r\n");
   }
 
-  ret &= infoThreadInit(&thread_list[THREAD_ID_INFO]);
-  ret &= cliThreadInit(&thread_list[THREAD_ID_CLI]);
-  ret &= lcdThreadInit(&thread_list[THREAD_ID_LCD]);
-  ret &= canBusThreadInit(&thread_list[THREAD_ID_CAN_BUS]);
+  thread_list[THREAD_ID_INFO].init    = infoThreadInit;
+  thread_list[THREAD_ID_CLI].init     = cliThreadInit;
+  thread_list[THREAD_ID_LCD].init     = lcdThreadInit;
+  thread_list[THREAD_ID_CAN_BUS].init = canBusThreadInit;
+  thread_list[THREAD_ID_CMD_BUS].init = cmdBusThreadInit;
+  
+
+  for (int i=0; i<THREAD_ID_MAX; i++)
+  {
+    if (thread_list[i].init != NULL)
+    {
+      ret &= thread_list[i].init(&thread_list[i]);
+    }
+  }
 
   return ret;
 }

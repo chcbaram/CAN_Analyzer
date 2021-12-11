@@ -84,6 +84,11 @@ bool uartInit(void)
   return true;
 }
 
+bool uartIsOpen(uint8_t ch)
+{
+  return uart_tbl[ch].is_open;
+}
+
 bool uartOpen(uint8_t ch, uint32_t baud)
 {
   bool ret = false;
