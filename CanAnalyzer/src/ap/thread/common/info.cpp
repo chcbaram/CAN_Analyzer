@@ -11,6 +11,9 @@
 #include "info.h"
 
 
+namespace ap
+{
+
 static const char *thread_name = "info        ";
 static thread_t *thread = NULL;
 
@@ -82,11 +85,9 @@ bool infoEvent(Event_t event)
   switch(event)
   {
     case EVENT_USB_OPEN:
-      logPrintf("EVENT_USB_OPEN : %s,%d\n", __FILE__, __LINE__);
       break;
 
     case EVENT_USB_CLOSE:
-      logPrintf("EVENT_USB_CLOSE : %s,%d\n", __FILE__, __LINE__);
       break;
 
     default:
@@ -157,3 +158,5 @@ void cliInfo(cli_args_t *args)
     cliPrintf("info task\n");
   }
 }
+
+} // namespace ap

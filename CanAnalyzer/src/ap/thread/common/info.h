@@ -11,8 +11,11 @@
 
 #include "ap_def.h"
 
+namespace ap
+{
 
-bool infoThreadInit(thread_t *p_thread);
+bool infoThreadInit(thread_t_ *p_thread);
 
+}
 
 #endif /* SRC_AP_THREAD_COMMON_INFO_H_ */

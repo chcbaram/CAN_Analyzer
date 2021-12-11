@@ -12,6 +12,8 @@
 #include "thread/thread.h"
 
 
+using namespace ap;
+
 
 static bool is_usb_open = false;
 

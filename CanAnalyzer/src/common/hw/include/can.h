@@ -32,27 +32,27 @@ typedef enum
   CAN_2M,
   CAN_4M,
   CAN_5M
-} can_baud_t;
+} CanBaud_t;
 
 typedef enum
 {
   CAN_NORMAL,
   CAN_MONITOR,
   CAN_LOOPBACK
-}can_mode_t;
+} CanMode_t;
 
 typedef enum
 {
   CAN_CLASSIC,
   CAN_FD_NO_BRS,
   CAN_FD_BRS
-} can_frame_t;
+} CanFrame_t;
 
 typedef enum
 {
   CAN_STD,
   CAN_EXT
-} can_id_type_t;
+} CanIdType_t;
 
 typedef enum
 {
@@ -72,7 +72,7 @@ typedef enum
   CAN_DLC_32,
   CAN_DLC_48,
   CAN_DLC_64
-} can_dlc_t;
+} CanDlc_t;
 
 typedef enum
 {
@@ -82,8 +82,18 @@ typedef enum
   CAN_ERR_BUS_OFF   = 0x00000004,
   CAN_ERR_BUS_FAULT = 0x00000008,
   CAN_ERR_ETC       = 0x00000010,
-} can_err_t;
+} CanErr_t;
 
+typedef enum
+{
+  CAN_EVT_NONE,
+  CAN_EVT_MSG,
+  CAN_EVT_ERR_PASSIVE,
+  CAN_EVT_ERR_WARNING,
+  CAN_EVT_ERR_BUS_OFF,
+  CAN_EVT_ERR_BUS_FAULT,
+  CAN_EVT_ERR_ETC,
+} CanEvent_t;
 
 typedef struct
 {
@@ -91,9 +101,9 @@ typedef struct
   uint16_t length;
   uint8_t  data[64];
 
-  can_dlc_t      dlc;
-  can_id_type_t  id_type;
-  can_frame_t    frame;
+  CanDlc_t      dlc;
+  CanIdType_t   id_type;
+  CanFrame_t    frame;
 } can_msg_t;
 
 
@@ -101,11 +111,11 @@ typedef struct
 
 
 bool     canInit(void);
-bool     canOpen(uint8_t ch, can_mode_t mode, can_frame_t frame, can_baud_t baud, can_baud_t baud_data);
+bool     canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBaud_t baud_data);
 void     canClose(uint8_t ch);
-bool     canConfigFilter(uint8_t ch, uint8_t index, can_id_type_t id_type, uint32_t id, uint32_t id_mask);
+bool     canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id, uint32_t id_mask);
 
-bool     canMsgInit(can_msg_t *p_msg, can_frame_t frame, can_id_type_t  id_type, can_dlc_t dlc);
+bool     canMsgInit(can_msg_t *p_msg, CanFrame_t frame, CanIdType_t  id_type, CanDlc_t dlc);
 uint32_t canMsgAvailable(uint8_t ch);
 bool     canMsgWrite(uint8_t ch, can_msg_t *p_msg, uint32_t timeout);
 bool     canMsgRead(uint8_t ch, can_msg_t *p_msg);
@@ -121,7 +131,7 @@ void     canErrClear(uint8_t ch);
 void     canErrPrint(uint8_t ch);
 bool     canUpdate(void);
 
-void     canAttachRxInterrupt(uint8_t ch, bool (*handler)(can_msg_t *arg));
+void     canAttachRxInterrupt(uint8_t ch, bool (*handler)(uint8_t ch, CanEvent_t evt, can_msg_t *arg));
 void     canDetachRxInterrupt(uint8_t ch);
 
 

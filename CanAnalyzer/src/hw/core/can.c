@@ -100,16 +100,16 @@ typedef struct
   uint32_t fifo_idx;
   uint32_t enable_int;
   uint32_t interrupt_line;
-  can_mode_t  mode;
-  can_frame_t frame;
-  can_baud_t  baud;
-  can_baud_t  baud_data;
+  CanMode_t  mode;
+  CanFrame_t frame;
+  CanBaud_t  baud;
+  CanBaud_t  baud_data;
 
   uint32_t rx_cnt;
   uint32_t tx_cnt;
 
   FDCAN_HandleTypeDef  hfdcan;
-  bool (*handler)(can_msg_t *arg);
+  bool (*handler)(uint8_t ch, CanEvent_t evt, can_msg_t *arg);
 
   qbuffer_t q_msg;
   can_msg_t can_msg[CAN_MSG_RX_BUF_MAX];
@@ -162,7 +162,7 @@ bool canInit(void)
   return ret;
 }
 
-bool canOpen(uint8_t ch, can_mode_t mode, can_frame_t frame, can_baud_t baud, can_baud_t baud_data)
+bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBaud_t baud_data)
 {
   bool ret = true;
   FDCAN_HandleTypeDef  *p_can;
@@ -328,7 +328,7 @@ void canClose(uint8_t ch)
 
 }
 
-bool canConfigFilter(uint8_t ch, uint8_t index, can_id_type_t id_type, uint32_t id, uint32_t id_mask)
+bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id, uint32_t id_mask)
 {
   bool ret = false;
   FDCAN_FilterTypeDef sFilterConfig;
@@ -375,7 +375,7 @@ uint32_t canMsgAvailable(uint8_t ch)
   return qbufferAvailable(&can_tbl[ch].q_msg);
 }
 
-bool canMsgInit(can_msg_t *p_msg, can_frame_t frame, can_id_type_t  id_type, can_dlc_t dlc)
+bool canMsgInit(can_msg_t *p_msg, CanFrame_t frame, CanIdType_t  id_type, CanDlc_t dlc)
 {
   p_msg->frame   = frame;
   p_msg->id_type = id_type;
@@ -541,7 +541,7 @@ uint32_t canGetState(uint8_t ch)
   return HAL_FDCAN_GetState(&can_tbl[ch].hfdcan);
 }
 
-void canAttachRxInterrupt(uint8_t ch, bool (*handler)(can_msg_t *arg))
+void canAttachRxInterrupt(uint8_t ch, bool (*handler)(uint8_t ch, CanEvent_t evt, can_msg_t *arg))
 {
   if(ch >= CAN_MAX_CH) return;
 
@@ -647,7 +647,7 @@ void canRxFifoCallback(uint8_t ch, FDCAN_HandleTypeDef *hfdcan)
 
     if( can_tbl[ch].handler != NULL )
     {
-      if ((*can_tbl[ch].handler)((void *)rx_buf) == true)
+      if ((*can_tbl[ch].handler)(ch, CAN_EVT_MSG, (void *)rx_buf) == true)
       {
         qbufferRead(&can_tbl[ch].q_msg, NULL, 1);
       }
@@ -679,12 +679,15 @@ void canErrPrint(uint8_t ch)
 void canErrUpdate(uint8_t ch)
 {
   FDCAN_ProtocolStatusTypeDef protocol_status;
+  CanEvent_t can_evt = CAN_EVT_NONE;
+
 
   HAL_FDCAN_GetProtocolStatus(&can_tbl[ch].hfdcan, &protocol_status);
 
   if (protocol_status.ErrorPassive)
   {
     can_tbl[ch].err_code |= CAN_ERR_PASSIVE;
+    can_evt = CAN_EVT_ERR_PASSIVE;
   }
   else
   {
@@ -694,6 +697,7 @@ void canErrUpdate(uint8_t ch)
   if (protocol_status.Warning)
   {
     can_tbl[ch].err_code |= CAN_ERR_WARNING;
+    can_evt = CAN_EVT_ERR_WARNING;
   }
   else
   {
@@ -703,11 +707,20 @@ void canErrUpdate(uint8_t ch)
   if (protocol_status.BusOff)
   {
     can_tbl[ch].err_code |= CAN_ERR_BUS_OFF;
+    can_evt = CAN_EVT_ERR_BUS_OFF;
   }
   else
   {
     can_tbl[ch].err_code &= ~CAN_ERR_BUS_OFF;
   }
+
+  if( can_tbl[ch].handler != NULL)
+  {
+    if (can_evt != CAN_EVT_NONE)
+    {
+      (*can_tbl[ch].handler)(ch, can_evt, NULL);
+    }
+  }  
 }
 
 

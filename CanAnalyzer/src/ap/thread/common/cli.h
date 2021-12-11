@@ -11,8 +11,11 @@
 
 #include "ap_def.h"
 
+namespace ap
+{
 
 bool cliThreadInit(thread_t *p_thread);
 
+}
 
 #endif /* SRC_AP_THREAD_COMMON_CLI_H_ */

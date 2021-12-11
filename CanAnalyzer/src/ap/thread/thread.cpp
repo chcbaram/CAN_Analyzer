@@ -12,6 +12,11 @@
 #include "common/info.h"
 #include "common/cli.h"
 #include "display/lcd.h"
+#include "manage/can_bus.h"
+
+
+namespace ap
+{
 
 
 static const char *thread_name = "Dummy       ";
@@ -63,6 +68,7 @@ bool threadInit(void)
   ret &= infoThreadInit(&thread_list[THREAD_ID_INFO]);
   ret &= cliThreadInit(&thread_list[THREAD_ID_CLI]);
   ret &= lcdThreadInit(&thread_list[THREAD_ID_LCD]);
+  ret &= canBusThreadInit(&thread_list[THREAD_ID_CAN_BUS]);
 
   return ret;
 }
@@ -101,3 +107,5 @@ void threadEvent(void const *argument)
     }
   }
 }
+
+} // namespace ap

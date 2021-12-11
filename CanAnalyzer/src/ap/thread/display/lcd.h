@@ -11,8 +11,11 @@
 
 #include "ap_def.h"
 
+namespace ap
+{
 
 bool lcdThreadInit(thread_t *p_thread);
 
+}
 
 #endif 

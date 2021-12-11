@@ -7,9 +7,12 @@
 
 
 
-
 #include "cli.h"
 
+
+
+namespace ap
+{
 
 static const char *thread_name = "cli         ";
 static thread_t *thread = NULL;
@@ -79,3 +82,5 @@ void cliThread(void const *argument)
     thread->hearbeat++;
   }
 }
+
+} // namespace ap
