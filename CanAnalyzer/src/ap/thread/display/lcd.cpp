@@ -50,8 +50,8 @@ bool lcdThreadInit(thread_t *p_thread)
 void lcdThread(void const *argument)
 {
   (void)argument;
-  uint32_t can_rx_cnt[2];
-  uint32_t can_tx_cnt[2];
+  uint32_t can_rx_cnt[2] = {0, };
+  uint32_t can_tx_cnt[2] = {0, };
 
 
   lcdSetFont(LCD_FONT_HAN);
@@ -71,8 +71,8 @@ void lcdThread(void const *argument)
       int16_t o_x[2] = {0,  0};
       int16_t o_y[2] = {24, 24+16};
 
-      lcdPrintf(o_x[0], o_y[0], green, "CAN1 T   R");
-      lcdPrintf(o_x[1], o_y[1], green, "CAN2 T   R" );
+      lcdPrintf(o_x[0], o_y[0], green, "CAN1 R   T");
+      lcdPrintf(o_x[1], o_y[1], green, "CAN2 R   T" );
 
 
       for (int i=0; i<CAN_MAX_CH; i++)

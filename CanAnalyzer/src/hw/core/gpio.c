@@ -36,7 +36,7 @@ const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
         {GPIOA, GPIO_PIN_3,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 5. CAN2_TML
 
         {GPIOD, GPIO_PIN_1,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 6. LCD_RST
-        {GPIOC, GPIO_PIN_8,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 7. LCD_BLK
+        {GPIOC, GPIO_PIN_8,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_LOW  },     // 7. LCD_BLK
         {GPIOD, GPIO_PIN_2,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 8. LCD_CS
         {GPIOC, GPIO_PIN_9,  _DEF_OUTPUT,        GPIO_PIN_SET, GPIO_PIN_RESET,   _DEF_HIGH },     // 9. LCD_DC
 
