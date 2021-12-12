@@ -69,7 +69,9 @@ bool threadInit(void)
 
   thread_list[THREAD_ID_INFO].init    = infoThreadInit;
   thread_list[THREAD_ID_CLI].init     = cliThreadInit;
+  #ifdef _USE_HW_LCD_DISPLAY
   thread_list[THREAD_ID_LCD].init     = lcdThreadInit;
+  #endif
   thread_list[THREAD_ID_CAN_BUS].init = canBusThreadInit;
   thread_list[THREAD_ID_CMD_BUS].init = cmdBusThreadInit;
   

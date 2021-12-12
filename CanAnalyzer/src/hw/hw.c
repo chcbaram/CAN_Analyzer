@@ -72,8 +72,10 @@ bool hwInit(void)
 
   esp32Init();
   canInit();
+  #ifdef _USE_HW_LCD_DISPLAY
   spiInit();
   lcdInit();
+  #endif
   
   logBoot(false);
 

@@ -135,22 +135,24 @@ void cmdBusThread(void const *argument)
       pre_time = millis();
     }
 
-    if (cmdCanReceivePacket(&cmd_can) == true)
+    if (usbGetType() == USB_CON_CAN)
     {
-      cmdBusPrintPacket(&cmd_can.rx_packet);
+      if (cmdCanReceivePacket(&cmd_can) == true)
+      {
+        cmdBusPrintPacket(&cmd_can.rx_packet);
 
-      cmd_can_packet_t *p_pkt = &cmd_can.tx_packet;
+        cmd_can_packet_t *p_pkt = &cmd_can.tx_packet;
 
-      p_pkt->type = PKT_TYPE_CAN;
-      p_pkt->cmd  = PKT_CMD_CAN_RECV_CAN0;
-      p_pkt->addr = 0x0101;
-      p_pkt->length = 2;
-      p_pkt->data[0] = 0;
-      p_pkt->data[1] = 1;
+        p_pkt->type = PKT_TYPE_CAN;
+        p_pkt->cmd  = PKT_CMD_CAN_RECV_CAN0;
+        p_pkt->addr = 0x0101;
+        p_pkt->length = 2;
+        p_pkt->data[0] = 0;
+        p_pkt->data[1] = 1;
 
-      cmdCanSendCmdPacket(&cmd_can, p_pkt);  
+        cmdCanSendCmdPacket(&cmd_can, p_pkt);  
+      }
     }
-
     delay(2);
     thread->hearbeat++;
   }

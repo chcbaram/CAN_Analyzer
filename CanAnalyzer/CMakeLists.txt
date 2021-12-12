@@ -65,6 +65,8 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
   -DSTM32H743xx 
   -D_GLIBCXX_INCLUDE_NEXT_C_HEADERS
   -DLFS_THREADSAFE
+
+  -D_USE_HW_LCD_DISPLAY
   )
 
 target_compile_options(${EXECUTABLE} PRIVATE

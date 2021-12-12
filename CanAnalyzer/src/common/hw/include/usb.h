@@ -23,7 +23,7 @@ typedef enum UsbMode
   USB_NON_MODE,
   USB_CDC_MODE,
   USB_MSC_MODE
-} usb_mode_t;
+} UsbMode_t;
 
 typedef enum UsbType
 {
@@ -31,17 +31,17 @@ typedef enum UsbType
   USB_CON_CAN = 1,
   USB_CON_CLI = 2,
   USB_CON_ESP = 3,
-} usb_type_t;
+} UsbType_t;
 
 
 bool usbInit(void);
-bool usbBegin(usb_mode_t usb_mode);
+bool usbBegin(UsbMode_t usb_mode);
 void usbDeInit(void);
 bool usbIsOpen(void);
 bool usbIsConnect(void);
 
-usb_mode_t usbGetMode(void);
-usb_type_t usbGetType(void);
+UsbMode_t usbGetMode(void);
+UsbType_t usbGetType(void);
 
 #endif
 
