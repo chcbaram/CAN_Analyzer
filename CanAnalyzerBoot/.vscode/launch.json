@@ -1,0 +1,14 @@
+{
+  "configurations": [
+  {
+    "cwd": "${workspaceRoot}",
+    "executable": "./build/CanAnalyzerBoot.elf",
+    "name": "Debug CanAnalyzerBoot",
+    "request": "launch",
+    "type": "cortex-debug",
+    "showDevDebugOutput": false,
+    "servertype": "stlink",
+    "svdFile": "./tools/STM32H7x3.svd"
+  }
+  ]
+}
