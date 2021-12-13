@@ -132,7 +132,11 @@ uint32_t cdcIfWrite(uint8_t *p_data, uint32_t length)
       p_data += tx_len;
       sent_len += tx_len;
     }
-
+    else
+    {
+      delay(1);
+    }
+    
     if (cdcIfIsConnected() != true)
     {
       break;

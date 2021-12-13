@@ -13,7 +13,7 @@
 #include "bsp.h"
 
 
-#define _DEF_BOOT_VERSION    "B211121R1"
+#define _DEF_BOOT_VERSION    "B211213R1"
 #define _DEF_BOARD_NAME      "Bootloader"
 
 
