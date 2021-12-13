@@ -111,6 +111,11 @@
 #define _DEF_UART_ESP_BOOT          _DEF_UART3
 #define _DEF_UART_ESP_UART          _DEF_UART4
 
+#define _DEF_LED_CAN1               _DEF_LED1
+#define _DEF_LED_CAN2               _DEF_LED2
+#define _DEF_LED_RUN                _DEF_LED3
+#define _DEF_LED_MODE               _DEF_LED4
+
 
 #define _PIN_GPIO_ESP_RST           2
 #define _PIN_GPIO_ESP_BOOT          3

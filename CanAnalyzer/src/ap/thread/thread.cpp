@@ -12,6 +12,7 @@
 #include "common/info.h"
 #include "common/cli.h"
 #include "display/lcd.h"
+#include "display/led.h"
 #include "manage/can_bus.h"
 #include "manage/cmd_bus.h"
 
@@ -67,13 +68,14 @@ bool threadInit(void)
     logPrintf("threadEvent \t\t: Fail\r\n");
   }
 
-  thread_list[THREAD_ID_INFO].init    = infoThreadInit;
-  thread_list[THREAD_ID_CLI].init     = cliThreadInit;
+  thread_list[THREAD_ID_INFO   ].init = infoThreadInit;
+  thread_list[THREAD_ID_CLI    ].init = cliThreadInit;
   #ifdef _USE_HW_LCD_DISPLAY
-  thread_list[THREAD_ID_LCD].init     = lcdThreadInit;
+  thread_list[THREAD_ID_LCD    ].init = lcdThreadInit;
   #endif
   thread_list[THREAD_ID_CAN_BUS].init = canBusThreadInit;
   thread_list[THREAD_ID_CMD_BUS].init = cmdBusThreadInit;
+  thread_list[THREAD_ID_LED    ].init = ledThreadInit;
   
 
   for (int i=0; i<THREAD_ID_MAX; i++)

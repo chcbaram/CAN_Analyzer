@@ -17,8 +17,8 @@ namespace ap
 static const char *thread_name = "lcd         ";
 static thread_t *thread = NULL;
 
-uint32_t can_rx_cnt[2] = {0, };
-uint32_t can_tx_cnt[2] = {0, };
+static uint32_t can_rx_cnt[2] = {0, };
+static uint32_t can_tx_cnt[2] = {0, };
 
 
 static void lcdThread(void const *argument);;
