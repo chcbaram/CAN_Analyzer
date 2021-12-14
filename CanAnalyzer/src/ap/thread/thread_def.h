@@ -25,6 +25,7 @@ typedef enum
   THREAD_ID_CAN_BUS,
   THREAD_ID_CMD_BUS,
   THREAD_ID_LED,
+  THREAD_ID_USB_BUS,
   THREAD_ID_MAX
 } ThreadId_t;
 

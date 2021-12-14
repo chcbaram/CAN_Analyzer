@@ -29,6 +29,7 @@
 #define _HW_DEF_RTOS_THREAD_PRI_LCD           osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_CAN_BUS       osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_CMD_BUS       osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_USB_BUS       osPriorityNormal
 
 #define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CLI           _HW_DEF_RTOS_MEM_SIZE( 6*1024)
@@ -38,7 +39,7 @@
 #define _HW_DEF_RTOS_THREAD_MEM_LCD           _HW_DEF_RTOS_MEM_SIZE( 1*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CAN_BUS       _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CMD_BUS       _HW_DEF_RTOS_MEM_SIZE( 1*1024)
-
+#define _HW_DEF_RTOS_THREAD_MEM_USB_BUS       _HW_DEF_RTOS_MEM_SIZE(    256)
 
 
 #define _USE_HW_ESP32

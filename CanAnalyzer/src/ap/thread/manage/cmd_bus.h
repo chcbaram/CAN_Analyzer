@@ -13,7 +13,15 @@
 
 namespace ap
 {
+  
+typedef struct
+{
+  uint32_t (*available)(void);
+  bool     (*read)(cmd_can_packet_t *p_packet);
+  bool     (*write)(cmd_can_packet_t *p_packet);
+} cmdbus_obj_t;
 
+cmdbus_obj_t *cmdBusObj(void);
 bool cmdBusThreadInit(thread_t *p_thread);
 
 }

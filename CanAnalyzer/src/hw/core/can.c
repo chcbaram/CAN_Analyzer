@@ -119,6 +119,11 @@ static can_tbl_t can_tbl[CAN_MAX_CH];
 
 static volatile uint32_t err_int_cnt = 0;
 
+#ifdef _USE_HW_RTOS
+static osMutexId mutex_lock;
+#else
+static bool is_lock = flase;
+#endif
 
 #ifdef _USE_HW_CLI
 static void cliCan(cli_args_t *args);
@@ -156,10 +161,59 @@ bool canInit(void)
     qbufferCreateBySize(&can_tbl[i].q_msg, (uint8_t *)&can_tbl[i].can_msg[0], sizeof(can_msg_t), CAN_MSG_RX_BUF_MAX);
   }
 
+  #ifdef _USE_HW_RTOS
+  osMutexDef(mutex_lock);
+  mutex_lock = osMutexCreate (osMutex(mutex_lock));
+  #else
+  is_lock = flase;
+  #endif
+
 #ifdef _USE_HW_CLI
   cliAdd("can", cliCan);
 #endif
   return ret;
+}
+
+bool canLock(void)
+{
+  bool ret = true;
+  uint32_t timeout = 0;
+
+
+#ifdef _USE_HW_RTOS
+  if (timeout > 0)
+    osMutexWait(mutex_lock, timeout);
+  else
+    osMutexWait(mutex_lock, osWaitForever);    
+#else
+  uint32_t pre_time;
+
+  pre_time = millis();
+  while(1)
+  {
+    if (is_lock == false)
+      break;
+
+    if (timeout > 0 && millis()-pre_time >= timeout)
+    {
+      ret = false;
+      break;
+    }
+  }
+#endif  
+
+  return ret;
+}
+
+bool canUnLock(void)
+{
+#ifdef _USE_HW_RTOS
+  osMutexRelease(mutex_lock);
+#else
+  is_lock = false;
+#endif  
+
+  return true;
 }
 
 bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBaud_t baud_data)
@@ -323,9 +377,59 @@ bool canOpen(uint8_t ch, CanMode_t mode, CanFrame_t frame, CanBaud_t baud, CanBa
   return ret;
 }
 
+bool canIsOpen(uint8_t ch)
+{
+  if(ch >= CAN_MAX_CH) return false;
+
+  return can_tbl[ch].is_open;
+}
+
 void canClose(uint8_t ch)
 {
 
+}
+
+bool canGetInfo(uint8_t ch, can_info_t *p_info)
+{
+  if(ch >= CAN_MAX_CH) return false;
+
+  p_info->baud = can_tbl[ch].baud;
+  p_info->baud_data = can_tbl[ch].baud_data;
+  p_info->frame = can_tbl[ch].frame;
+  p_info->mode = can_tbl[ch].mode;
+
+  return true;
+}
+
+CanDlc_t canGetDlc(uint8_t length)
+{
+  CanDlc_t ret;
+
+  if (length >= 64) 
+    ret = CAN_DLC_64;
+  else if (length >= 48)
+    ret = CAN_DLC_48;
+  else if (length >= 32)  
+    ret = CAN_DLC_32;
+  else if (length >= 24)  
+    ret = CAN_DLC_24;
+  else if (length >= 20)  
+    ret = CAN_DLC_20;
+  else if (length >= 16)  
+    ret = CAN_DLC_16;
+  else if (length >= 12)  
+    ret = CAN_DLC_12;
+  else if (length >= 8)  
+    ret = CAN_DLC_8;
+  else
+    ret = (CanDlc_t)length;
+
+  return ret;
+}
+
+uint8_t canGetLen(CanDlc_t dlc)
+{
+  return dlc_len_tbl[(int)dlc];
 }
 
 bool canConfigFilter(uint8_t ch, uint8_t index, CanIdType_t id_type, uint32_t id, uint32_t id_mask)
@@ -394,6 +498,7 @@ bool canMsgWrite(uint8_t ch, can_msg_t *p_msg, uint32_t timeout)
 
   if(ch > CAN_MAX_CH) return false;
 
+  if (can_tbl[ch].is_open != true) return false;
   if (can_tbl[ch].err_code & CAN_ERR_BUS_OFF) return false;
 
 
@@ -620,7 +725,7 @@ void canRxFifoCallback(uint8_t ch, FDCAN_HandleTypeDef *hfdcan)
       rx_buf->id_type = CAN_EXT;
     }
     rx_buf->length = dlc_len_tbl[(rx_header.DataLength >> 16) & 0x0F];
-
+    rx_buf->dlc = canGetDlc(rx_buf->length); 
 
     if (rx_header.FDFormat == FDCAN_FD_CAN)
     {
@@ -926,6 +1031,7 @@ void cliCan(cli_args_t *args)
   bool ret = false;
 
 
+  canLock();
 
   if (args->argc == 1 && args->isStr(0, "info"))
   {
@@ -989,7 +1095,7 @@ void cliCan(cli_args_t *args)
 
 
     err_code = can_tbl[ch].err_code;
-
+    
     while(cliKeepLoop())
     {
       can_msg_t msg;
@@ -1074,6 +1180,8 @@ void cliCan(cli_args_t *args)
     }
     ret = true;
   }
+
+  canUnLock();
 
   if (ret == false)
   {

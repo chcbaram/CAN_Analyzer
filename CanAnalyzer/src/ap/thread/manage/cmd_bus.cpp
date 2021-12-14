@@ -10,9 +10,14 @@
 
 #include "cmd_bus.h"
 #include "cmd_can.h"
+#include "can_bus.h"
+
 
 namespace ap
 {
+
+#define CMD_CAN_PACKET_MAX   32
+
 
 static const char *thread_name = "cmdBus       ";
 static thread_t *thread = NULL;
@@ -20,6 +25,12 @@ static thread_t *thread = NULL;
 static uint8_t   cmd_can_ch   = _DEF_UART_USB;
 static cmd_can_t cmd_can;
 static cmd_can_driver_t cmd_can_driver;
+static cmdbus_obj_t cmdbus_obj;
+
+qbuffer_t cmd_can_rx_q;
+qbuffer_t cmd_can_tx_q;
+static cmd_can_packet_t cmd_can_packet_rx[CMD_CAN_PACKET_MAX];
+static cmd_can_packet_t cmd_can_packet_tx[CMD_CAN_PACKET_MAX];
 
 static void cmdBusThread(void const *argument);
 static bool cmdBusThreadEvent(Event_t event);
@@ -30,6 +41,9 @@ static bool     drvFlush(void);
 static uint8_t  drvRead(void);
 static uint32_t drvWrite(uint8_t *p_data, uint32_t length);
 
+static uint32_t cmdBusAvailble(void);
+static bool cmdBusRead(cmd_can_packet_t *p_packet);
+static bool cmdBusWrite(cmd_can_packet_t *p_packet);
 
 
 
@@ -43,6 +57,13 @@ bool cmdBusThreadInit(thread_t *p_thread)
   thread->name = thread_name;
   thread->onEvent = cmdBusThreadEvent;
 
+  cmdbus_obj.available = cmdBusAvailble;
+  cmdbus_obj.read = cmdBusRead;
+  cmdbus_obj.write = cmdBusWrite;
+
+
+  qbufferCreateBySize(&cmd_can_rx_q, (uint8_t *)&cmd_can_packet_rx[0], sizeof(cmd_can_packet_t), CMD_CAN_PACKET_MAX);
+  qbufferCreateBySize(&cmd_can_tx_q, (uint8_t *)&cmd_can_packet_tx[0], sizeof(cmd_can_packet_t), CMD_CAN_PACKET_MAX);
 
   osThreadDef(cmdBusThread, cmdBusThread, _HW_DEF_RTOS_THREAD_PRI_CMD_BUS, 0, _HW_DEF_RTOS_THREAD_MEM_CMD_BUS);
   if (osThreadCreate(osThread(cmdBusThread), NULL) != NULL)
@@ -72,6 +93,27 @@ bool cmdBusThreadEvent(Event_t event)
 
   return ret;
 }
+
+uint32_t cmdBusAvailble(void)
+{
+  return qbufferAvailable(&cmd_can_rx_q);
+}
+
+bool cmdBusRead(cmd_can_packet_t *p_packet)
+{
+  return qbufferRead(&cmd_can_rx_q, (uint8_t *)p_packet, 1);
+}
+
+bool cmdBusWrite(cmd_can_packet_t *p_packet)
+{
+  return qbufferWrite(&cmd_can_tx_q, (uint8_t *)p_packet, 1);
+}
+
+cmdbus_obj_t *cmdBusObj(void)
+{
+  return &cmdbus_obj;
+}
+
 
 void drvInit(cmd_can_driver_t *p_driver)
 {
@@ -118,8 +160,9 @@ void cmdBusPrintPacket(cmd_can_packet_t *p_pkt)
 
 void cmdBusThread(void const *argument)
 {
-  uint32_t pre_time;
   (void)argument;
+  bool ret;
+  uint8_t cnt;
   
 
   drvInit(&cmd_can_driver);
@@ -127,18 +170,13 @@ void cmdBusThread(void const *argument)
   cmdCanInit(&cmd_can, &cmd_can_driver);
   cmdCanOpen(&cmd_can);
 
-  pre_time = millis();
   while(1)
   {        
-    if (millis()-pre_time >= 1000)
-    {
-      pre_time = millis();
-    }
-
     if (usbGetType() == USB_CON_CAN)
     {
       if (cmdCanReceivePacket(&cmd_can) == true)
       {
+        #if 0
         cmdBusPrintPacket(&cmd_can.rx_packet);
 
         cmd_can_packet_t *p_pkt = &cmd_can.tx_packet;
@@ -149,11 +187,30 @@ void cmdBusThread(void const *argument)
         p_pkt->length = 2;
         p_pkt->data[0] = 0;
         p_pkt->data[1] = 1;
+        //cmdCanSendCmdPacket(&cmd_can, p_pkt);  
+        #endif
 
-        cmdCanSendCmdPacket(&cmd_can, p_pkt);  
+        ret = qbufferWrite(&cmd_can_rx_q, (uint8_t *)&cmd_can.rx_packet, 1);
+        if (ret != true)
+        {
+          logPrintf("cmd_can_rx_q write fail\n");
+        }
+      }
+
+      while(qbufferAvailable(&cmd_can_tx_q) > 0)
+      {        
+        cmd_can_packet_t *p_packet;
+        
+        p_packet = (cmd_can_packet_t *)qbufferPeekRead(&cmd_can_tx_q);
+        cmdCanSendCmdPacket(&cmd_can, p_packet);         
+        qbufferRead(&cmd_can_tx_q, NULL, 1);
       }
     }
-    delay(2);
+    
+    if (cmdCanIsBusy(&cmd_can) == false)
+    {
+      delay(2);
+    }    
     thread->hearbeat++;
   }
 }

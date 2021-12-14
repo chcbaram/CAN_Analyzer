@@ -15,7 +15,7 @@
 #include "display/led.h"
 #include "manage/can_bus.h"
 #include "manage/cmd_bus.h"
-
+#include "manage/usb_bus.h"
 
 namespace ap
 {
@@ -76,6 +76,7 @@ bool threadInit(void)
   thread_list[THREAD_ID_CAN_BUS].init = canBusThreadInit;
   thread_list[THREAD_ID_CMD_BUS].init = cmdBusThreadInit;
   thread_list[THREAD_ID_LED    ].init = ledThreadInit;
+  thread_list[THREAD_ID_USB_BUS].init = usbBusThreadInit;
   
 
   for (int i=0; i<THREAD_ID_MAX; i++)

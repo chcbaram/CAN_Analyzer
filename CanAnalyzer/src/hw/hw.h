@@ -32,6 +32,8 @@ extern "C" {
 #include "can.h"
 #include "spi.h"
 #include "lcd.h"
+#include "cmd_can.h"
+#include "qbuffer.h"
 
 
 bool hwInit(void);

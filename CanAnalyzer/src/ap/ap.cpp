@@ -15,15 +15,12 @@
 using namespace ap;
 
 
-static bool is_usb_open = false;
 
 
 
 void apInit(void)
 {
-  threadInit();
-
-  is_usb_open = !usbIsOpen();
+  threadInit();  
 }
 
 void apMain(void)
@@ -32,16 +29,6 @@ void apMain(void)
   {
     esp32Update();
     delay(2);
-
-    if (usbIsOpen() != is_usb_open)
-    {
-      is_usb_open = usbIsOpen();
-
-      if (is_usb_open == true)
-        threadNotify(EVENT_USB_OPEN);
-      else
-        threadNotify(EVENT_USB_CLOSE);
-    }
   }
 }
 
