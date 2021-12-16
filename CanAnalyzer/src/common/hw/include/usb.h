@@ -27,8 +27,8 @@ typedef enum UsbMode
 
 typedef enum UsbType
 {
-  USB_CON_CDC = 0,
-  USB_CON_CAN = 1,
+  USB_CON_CAN = 0,
+  USB_CON_CDC = 1,
   USB_CON_CLI = 2,
   USB_CON_ESP = 3,
 } UsbType_t;

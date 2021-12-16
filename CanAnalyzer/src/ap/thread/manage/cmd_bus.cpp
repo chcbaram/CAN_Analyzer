@@ -34,6 +34,7 @@ static cmd_can_packet_t cmd_can_packet_tx[CMD_CAN_PACKET_MAX];
 
 static void cmdBusThread(void const *argument);
 static bool cmdBusThreadEvent(Event_t event);
+static bool cmdBusThreadBegin(thread_t *p_thread);
 
 static void     drvInit(cmd_can_driver_t *p_driver);
 static uint32_t drvAvailable(void);
@@ -50,11 +51,12 @@ static bool cmdBusWrite(cmd_can_packet_t *p_packet);
 
 bool cmdBusThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = cmdBusThreadBegin;
   thread->onEvent = cmdBusThreadEvent;
 
   cmdbus_obj.available = cmdBusAvailble;
@@ -64,6 +66,15 @@ bool cmdBusThreadInit(thread_t *p_thread)
 
   qbufferCreateBySize(&cmd_can_rx_q, (uint8_t *)&cmd_can_packet_rx[0], sizeof(cmd_can_packet_t), CMD_CAN_PACKET_MAX);
   qbufferCreateBySize(&cmd_can_tx_q, (uint8_t *)&cmd_can_packet_tx[0], sizeof(cmd_can_packet_t), CMD_CAN_PACKET_MAX);
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool cmdBusThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
   osThreadDef(cmdBusThread, cmdBusThread, _HW_DEF_RTOS_THREAD_PRI_CMD_BUS, 0, _HW_DEF_RTOS_THREAD_MEM_CMD_BUS);
   if (osThreadCreate(osThread(cmdBusThread), NULL) != NULL)
@@ -76,7 +87,7 @@ bool cmdBusThreadInit(thread_t *p_thread)
     logPrintf("cmdThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }
@@ -174,22 +185,9 @@ void cmdBusThread(void const *argument)
   {        
     if (usbGetType() == USB_CON_CAN)
     {
+      // PC -> CAN
       if (cmdCanReceivePacket(&cmd_can) == true)
       {
-        #if 0
-        cmdBusPrintPacket(&cmd_can.rx_packet);
-
-        cmd_can_packet_t *p_pkt = &cmd_can.tx_packet;
-
-        p_pkt->type = PKT_TYPE_CAN;
-        p_pkt->cmd  = PKT_CMD_CAN_RECV_CAN0;
-        p_pkt->addr = 0x0101;
-        p_pkt->length = 2;
-        p_pkt->data[0] = 0;
-        p_pkt->data[1] = 1;
-        //cmdCanSendCmdPacket(&cmd_can, p_pkt);  
-        #endif
-
         ret = qbufferWrite(&cmd_can_rx_q, (uint8_t *)&cmd_can.rx_packet, 1);
         if (ret != true)
         {
@@ -197,6 +195,8 @@ void cmdBusThread(void const *argument)
         }
       }
 
+      // CAN -> PC
+      cnt = 0;
       while(qbufferAvailable(&cmd_can_tx_q) > 0)
       {        
         cmd_can_packet_t *p_packet;
@@ -204,13 +204,21 @@ void cmdBusThread(void const *argument)
         p_packet = (cmd_can_packet_t *)qbufferPeekRead(&cmd_can_tx_q);
         cmdCanSendCmdPacket(&cmd_can, p_packet);         
         qbufferRead(&cmd_can_tx_q, NULL, 1);
+
+        if (cnt++ > 8)
+          break;
       }
+
+      if (cmdCanIsBusy(&cmd_can) == false)
+      {
+        delay(2);
+      }    
     }
-    
-    if (cmdCanIsBusy(&cmd_can) == false)
+    else
     {
       delay(2);
-    }    
+    }
+    
     thread->hearbeat++;
   }
 }

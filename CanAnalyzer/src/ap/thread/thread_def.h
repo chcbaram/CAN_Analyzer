@@ -36,7 +36,7 @@ typedef struct thread_t_ thread_t;
 typedef struct thread_t_
 {
   bool is_init;
-  bool is_start;
+  bool is_begin;
 
   const char *name;
   uint32_t freq;
@@ -45,6 +45,8 @@ typedef struct thread_t_
   thread_t *list;
 
   bool (*init)(thread_t *p_thread);
+  bool (*begin)(thread_t *p_thread);
+
   bool (*notify)(Event_t event);
   bool (*onEvent)(Event_t event);
 

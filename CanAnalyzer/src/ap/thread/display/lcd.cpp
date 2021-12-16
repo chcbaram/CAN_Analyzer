@@ -22,6 +22,7 @@ static uint32_t can_tx_cnt[2] = {0, };
 
 
 static void lcdThread(void const *argument);;
+static bool lcdThreadBegin(thread_t *p_thread);
 
 static void updateTitle(void);
 static void updateCanInfo(void);
@@ -32,12 +33,22 @@ static void updateUsbInfo(void);
 
 bool lcdThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = lcdThreadBegin;
 
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool lcdThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
   osThreadDef(lcdThread, lcdThread, _HW_DEF_RTOS_THREAD_PRI_LCD, 0, _HW_DEF_RTOS_THREAD_MEM_LCD);
   if (osThreadCreate(osThread(lcdThread), NULL) != NULL)
@@ -50,7 +61,7 @@ bool lcdThreadInit(thread_t *p_thread)
     logPrintf("lcdThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }

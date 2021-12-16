@@ -24,15 +24,19 @@ static can_msg_t can_msg_tx;
 
 static void canBusThread(void const *argument);
 static bool canBusThreadEvent(Event_t event);
+static bool canBusThreadBegin(thread_t *p_thread);
+
+
 
 
 bool canBusThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = canBusThreadBegin;
   thread->onEvent = canBusThreadEvent;
 
   osMutexDef(mutex_lock);
@@ -40,6 +44,15 @@ bool canBusThreadInit(thread_t *p_thread)
   
   canOpen(_DEF_CAN1, CAN_NORMAL, CAN_CLASSIC, CAN_1M, CAN_2M);
   canOpen(_DEF_CAN2, CAN_NORMAL, CAN_CLASSIC, CAN_1M, CAN_2M);
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool canBusThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
 
   osThreadDef(canBusThread, canBusThread, _HW_DEF_RTOS_THREAD_PRI_CAN_BUS, 0, _HW_DEF_RTOS_THREAD_MEM_CAN_BUS);
@@ -53,7 +66,7 @@ bool canBusThreadInit(thread_t *p_thread)
     logPrintf("canThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }

@@ -19,17 +19,27 @@ static thread_t *thread = NULL;
 
 static void usbBusThread(void const *argument);
 static bool usbBusThreadEvent(Event_t event);
-
+static bool usbBusThreadBegin(thread_t *p_thread);
 
 
 bool usbBusThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
-
+  
   thread->name = thread_name;
+  thread->begin = usbBusThreadBegin;
   thread->onEvent = usbBusThreadEvent;
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool usbBusThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
 
   osThreadDef(usbBusThread, usbBusThread, _HW_DEF_RTOS_THREAD_PRI_USB_BUS, 0, _HW_DEF_RTOS_THREAD_MEM_USB_BUS);
@@ -43,7 +53,7 @@ bool usbBusThreadInit(thread_t *p_thread)
     logPrintf("usbThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }

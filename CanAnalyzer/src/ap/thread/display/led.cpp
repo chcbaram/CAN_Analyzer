@@ -22,6 +22,7 @@ static uint32_t can_tx_cnt[2] = {0, };
 
 
 static void ledThread(void const *argument);;
+static bool ledThreadBegin(thread_t *p_thread);
 
 static void updateCan(void);
 static void updateRun(void);
@@ -33,12 +34,22 @@ static void updateMode(void);
 
 bool ledThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = ledThreadBegin;
 
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool ledThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
   osThreadDef(ledThread, ledThread, _HW_DEF_RTOS_THREAD_PRI_LED, 0, _HW_DEF_RTOS_THREAD_MEM_LED);
   if (osThreadCreate(osThread(ledThread), NULL) != NULL)
@@ -51,7 +62,7 @@ bool ledThreadInit(thread_t *p_thread)
     logPrintf("ledThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }

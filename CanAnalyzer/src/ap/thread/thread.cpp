@@ -44,11 +44,13 @@ bool threadInit(void)
     thread_list[i].name = thread_name;
 
     thread_list[i].is_init = false;
+    thread_list[i].is_begin = false;
 
     thread_list[i].freq = 0;
     thread_list[i].hearbeat = 0;
 
     thread_list[i].init    = NULL;
+    thread_list[i].begin   = NULL;
     thread_list[i].notify  = threadNotify;
     thread_list[i].onEvent = NULL;
   }
@@ -84,6 +86,14 @@ bool threadInit(void)
     if (thread_list[i].init != NULL)
     {
       ret &= thread_list[i].init(&thread_list[i]);
+    }
+  }
+
+  for (int i=0; i<THREAD_ID_MAX; i++)
+  {
+    if (thread_list[i].begin != NULL)
+    {
+      ret &= thread_list[i].begin(&thread_list[i]);
     }
   }
 
