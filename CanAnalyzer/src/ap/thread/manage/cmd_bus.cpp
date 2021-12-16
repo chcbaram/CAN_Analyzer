@@ -76,7 +76,7 @@ bool cmdBusThreadInit(thread_t *p_thread)
   p_thread->is_init = ret;
 
 #ifdef _USE_HW_CLI
-  cliAdd("cmd_bus", cliCmdBus);
+  cliAdd("cmdBus", cliCmdBus);
 #endif
   return ret;
 }

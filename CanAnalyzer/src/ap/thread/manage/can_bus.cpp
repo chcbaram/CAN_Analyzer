@@ -56,7 +56,7 @@ bool canBusThreadInit(thread_t *p_thread)
   p_thread->is_init = ret;
 
 #ifdef _USE_HW_CLI
-  cliAdd("can_bus", cliCanBus);
+  cliAdd("canBus", cliCanBus);
 #endif
   return ret;
 }
@@ -203,7 +203,7 @@ void cliCanBus(cli_args_t *args)
   if (args->argc == 1 && args->isStr(0, "info"))
   {
     cliPrintf("err_cnt_can2pc : %d\n", err_cnt_can2pc);
-    cliPrintf("err_cnt_pc2pc  : %d\n", err_cnt_pc2can);
+    cliPrintf("err_cnt_pc2can : %d\n", err_cnt_pc2can);
     ret = true;
   }
 

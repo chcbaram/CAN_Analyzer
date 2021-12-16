@@ -19,7 +19,8 @@ static thread_t *thread = NULL;
 
 static uint32_t can_rx_cnt[2] = {0, };
 static uint32_t can_tx_cnt[2] = {0, };
-
+static uint8_t can_rx_on_time[2] = {0, };
+static uint8_t can_tx_on_time[2] = {0, };
 
 static void lcdThread(void const *argument);;
 static bool lcdThreadBegin(thread_t *p_thread);
@@ -110,11 +111,20 @@ void updateCanInfo(void)
     lcdDrawRect(8*6+2,  o_y[i]+1, 10, 12, yellow);
     lcdDrawRect(8*10+2, o_y[i]+1, 10, 12, yellow);
 
-    if (can_rx_cnt[i] != canGetRxCount(i))
+    if (can_rx_cnt[i] != canGetRxCount(i) && can_rx_on_time[i] == 0)
+      can_rx_on_time[i] = 2;
+    if (can_rx_on_time[i] >= 2)    
       lcdDrawFillRect(8*6+2, o_y[i]+1, 10, 12, yellow);
-
-    if (can_tx_cnt[i] != canGetTxCount(i))
+    
+    if (can_tx_cnt[i] != canGetTxCount(i) && can_tx_on_time[i] == 0)
+      can_tx_on_time[i] = 2;
+    if (can_tx_on_time[i] >= 2)
       lcdDrawFillRect(8*10+2, o_y[i]+1, 10, 12, yellow);
+
+    if (can_rx_on_time[i] > 0)
+      can_rx_on_time[i]--;
+    if (can_tx_on_time[i] > 0)
+      can_tx_on_time[i]--;
 
     can_rx_cnt[i] = canGetRxCount(i);
     can_tx_cnt[i] = canGetTxCount(i);
