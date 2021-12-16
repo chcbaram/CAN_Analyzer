@@ -133,8 +133,23 @@ void updateCan(void)
 void updateRun(void)
 {
   static uint32_t pre_time;
+  uint32_t led_on_time;
+  bool err_status = false;
 
-  if (millis()-pre_time >= 500)
+
+  for (int i=0; i<CAN_MAX_CH; i++)
+  {
+    if (canGetError(i) & CAN_ERR_PASSIVE) err_status = true;
+    if (canGetError(i) & CAN_ERR_BUS_OFF) err_status = true;
+    if (canGetError(i) & CAN_ERR_BUS_FAULT) err_status = true;
+  }
+
+  if (err_status != true)
+    led_on_time = 500;
+  else
+    led_on_time = 100;
+
+  if (millis()-pre_time >= led_on_time)
   {
     pre_time = millis();
 

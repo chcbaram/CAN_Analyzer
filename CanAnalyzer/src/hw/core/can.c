@@ -623,7 +623,7 @@ uint32_t canGetError(uint8_t ch)
 {
   if(ch >= CAN_MAX_CH) return 0;
 
-  return HAL_FDCAN_GetError(&can_tbl[ch].hfdcan);
+  return can_tbl[ch].err_code;
 }
 
 uint32_t canGetRxCount(uint8_t ch)
