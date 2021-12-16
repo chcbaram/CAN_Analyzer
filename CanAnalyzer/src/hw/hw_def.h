@@ -65,7 +65,7 @@
 
 #define _USE_HW_CAN
 #define      HW_CAN_MAX_CH          2
-#define      HW_CAN_MSG_RX_BUF_MAX  16
+#define      HW_CAN_MSG_RX_BUF_MAX  32
 
 #define _USE_HW_LOG
 #define      HW_LOG_CH              _DEF_UART1
@@ -73,7 +73,7 @@
 #define      HW_LOG_LIST_BUF_MAX    1024
 
 #define _USE_HW_CLI
-#define      HW_CLI_CMD_LIST_MAX    16
+#define      HW_CLI_CMD_LIST_MAX    32
 #define      HW_CLI_CMD_NAME_MAX    16
 #define      HW_CLI_LINE_HIS_MAX    4
 #define      HW_CLI_LINE_BUF_MAX    64

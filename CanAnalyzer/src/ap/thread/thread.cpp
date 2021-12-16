@@ -81,6 +81,7 @@ bool threadInit(void)
   thread_list[THREAD_ID_USB_BUS].init = usbBusThreadInit;
   
 
+  logBoot(true);
   for (int i=0; i<THREAD_ID_MAX; i++)
   {
     if (thread_list[i].init != NULL)
@@ -88,6 +89,7 @@ bool threadInit(void)
       ret &= thread_list[i].init(&thread_list[i]);
     }
   }
+  logBoot(false);
 
   for (int i=0; i<THREAD_ID_MAX; i++)
   {

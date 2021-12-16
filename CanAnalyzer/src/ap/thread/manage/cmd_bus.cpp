@@ -32,6 +32,9 @@ qbuffer_t cmd_can_tx_q;
 static cmd_can_packet_t cmd_can_packet_rx[CMD_CAN_PACKET_MAX];
 static cmd_can_packet_t cmd_can_packet_tx[CMD_CAN_PACKET_MAX];
 
+static uint32_t err_cnt_pc2can = 0;
+static uint32_t err_cnt_can2pc = 0;
+
 static void cmdBusThread(void const *argument);
 static bool cmdBusThreadEvent(Event_t event);
 static bool cmdBusThreadBegin(thread_t *p_thread);
@@ -46,6 +49,9 @@ static uint32_t cmdBusAvailble(void);
 static bool cmdBusRead(cmd_can_packet_t *p_packet);
 static bool cmdBusWrite(cmd_can_packet_t *p_packet);
 
+#ifdef _USE_HW_CLI
+static void cliCmdBus(cli_args_t *args);
+#endif
 
 
 
@@ -69,6 +75,9 @@ bool cmdBusThreadInit(thread_t *p_thread)
 
   p_thread->is_init = ret;
 
+#ifdef _USE_HW_CLI
+  cliAdd("cmd_bus", cliCmdBus);
+#endif
   return ret;
 }
 
@@ -191,7 +200,7 @@ void cmdBusThread(void const *argument)
         ret = qbufferWrite(&cmd_can_rx_q, (uint8_t *)&cmd_can.rx_packet, 1);
         if (ret != true)
         {
-          logPrintf("cmd_can_rx_q write fail\n");
+          err_cnt_pc2can++;
         }
       }
 
@@ -201,11 +210,19 @@ void cmdBusThread(void const *argument)
       {        
         cmd_can_packet_t *p_packet;
         
-        p_packet = (cmd_can_packet_t *)qbufferPeekRead(&cmd_can_tx_q);
-        cmdCanSendCmdPacket(&cmd_can, p_packet);         
+        if (usbIsOpen() == true)
+        {
+          p_packet = (cmd_can_packet_t *)qbufferPeekRead(&cmd_can_tx_q);
+          ret = cmdCanSendCmdPacket(&cmd_can, p_packet);         
+          if (ret != true)
+          {
+            logPrintf("cmdCanSendCmdPacket() fail\n");
+            err_cnt_can2pc++;
+          }
+        }
         qbufferRead(&cmd_can_tx_q, NULL, 1);
 
-        if (cnt++ > 8)
+        if (cnt++ > 32)
           break;
       }
 
@@ -223,6 +240,33 @@ void cmdBusThread(void const *argument)
   }
 }
 
+#ifdef _USE_HW_CLI
+void cliCmdBus(cli_args_t *args)
+{
+  bool ret = false;
+
+
+  if (args->argc == 1 && args->isStr(0, "info"))
+  {
+    cliPrintf("err_cnt_can2pc : %d\n", err_cnt_can2pc);
+    cliPrintf("err_cnt_pc2pc  : %d\n", err_cnt_pc2can);
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "clear"))
+  {
+    err_cnt_can2pc = 0;
+    err_cnt_pc2can = 0;
+    ret = true;
+  }
+
+  if (ret == false)
+  {
+    cliPrintf("cmdbus info\n");
+    cliPrintf("cmdbus clear\n");
+  }
+}
+#endif
 
 
 } // namespace ap

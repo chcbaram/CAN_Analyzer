@@ -22,9 +22,17 @@ static cmd_can_packet_t cmd_packet_tx;
 static can_msg_t can_msg_rx;
 static can_msg_t can_msg_tx;
 
+static uint32_t err_cnt_pc2can = 0;
+static uint32_t err_cnt_can2pc = 0;
+
 static void canBusThread(void const *argument);
 static bool canBusThreadEvent(Event_t event);
 static bool canBusThreadBegin(thread_t *p_thread);
+
+#ifdef _USE_HW_CLI
+static void cliCanBus(cli_args_t *args);
+#endif
+
 
 
 
@@ -47,6 +55,9 @@ bool canBusThreadInit(thread_t *p_thread)
 
   p_thread->is_init = ret;
 
+#ifdef _USE_HW_CLI
+  cliAdd("can_bus", cliCanBus);
+#endif
   return ret;
 }
 
@@ -107,7 +118,7 @@ void canBusThread(void const *argument)
           switch(cmd_packet_rx.cmd)
           {
             case PKT_CMD_CAN_RECV_CAN0:
-              logPrintf("PC -> CAN1\n");  
+              //logPrintf("PC -> CAN1\n");  
 
               canGetInfo(_DEF_CAN1, &can_info);
               can_msg_tx.id_type = CAN_EXT;
@@ -118,11 +129,12 @@ void canBusThread(void const *argument)
               if (canMsgWrite(_DEF_CAN1, &can_msg_tx, 50) != true)
               {
                 logPrintf("canMsgWrite(_DEF_CAN1) fail\n");
+                err_cnt_pc2can++;
               }
               break;
 
             case PKT_CMD_CAN_RECV_CAN1:
-              logPrintf("PC -> CAN2\n");  
+              //logPrintf("PC -> CAN2\n");  
 
               canGetInfo(_DEF_CAN1, &can_info);              
               can_msg_tx.id_type = CAN_EXT;
@@ -133,6 +145,7 @@ void canBusThread(void const *argument)
               if (canMsgWrite(_DEF_CAN2, &can_msg_tx, 50) != true)
               {
                 logPrintf("canMsgWrite(_DEF_CAN2) fail\n");
+                err_cnt_can2pc++;
               }
               break;
 
@@ -142,7 +155,7 @@ void canBusThread(void const *argument)
           }                    
         }
 
-        if (cnt++ > 8)
+        if (cnt++ > 32)
           break;
       }
 
@@ -155,7 +168,7 @@ void canBusThread(void const *argument)
           ret = canMsgRead(i, &can_msg_rx);
           if (ret == true)
           {
-            logPrintf("CAN -> PC\n");
+            //logPrintf("CAN -> PC\n");
 
             cmd_packet_tx.type = PKT_TYPE_CAN;
             cmd_packet_tx.cmd  = (i == 0) ? PKT_CMD_CAN_RECV_CAN0 : PKT_CMD_CAN_RECV_CAN1;
@@ -169,17 +182,44 @@ void canBusThread(void const *argument)
             }
           }
 
-          if (cnt++ > 8)
+          if (cnt++ > 32)
             break;
         }
       }
     }
 
     canUnLock();
-    delay(5);
+    delay(2);
     thread->hearbeat++;
   }
 }
 
+#ifdef _USE_HW_CLI
+void cliCanBus(cli_args_t *args)
+{
+  bool ret = false;
+
+
+  if (args->argc == 1 && args->isStr(0, "info"))
+  {
+    cliPrintf("err_cnt_can2pc : %d\n", err_cnt_can2pc);
+    cliPrintf("err_cnt_pc2pc  : %d\n", err_cnt_pc2can);
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "clear"))
+  {
+    err_cnt_can2pc = 0;
+    err_cnt_pc2can = 0;
+    ret = true;
+  }
+
+  if (ret == false)
+  {
+    cliPrintf("canbus info\n");
+    cliPrintf("canbus clear\n");
+  }
+}
+#endif
 
 } // namespace ap
