@@ -67,6 +67,11 @@ bool cmdCanClose(cmd_can_t *p_cmd)
   return true;
 }
 
+bool cmdCanIsBusy(cmd_can_t *p_cmd)
+{
+  return p_cmd->p_driver->available();
+}
+
 bool cmdCanReceivePacket(cmd_can_t *p_cmd)
 {
   bool ret = false;

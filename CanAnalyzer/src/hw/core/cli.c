@@ -784,6 +784,7 @@ void cliMemoryDump(cli_args_t *args)
         ascptr+=1;
       }
       cliPrintf("|\n   ");
+      delay(1);
     }
     addr++;
   }

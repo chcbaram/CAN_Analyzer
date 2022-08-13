@@ -71,6 +71,7 @@ typedef struct
 
   cmd_can_driver_t *p_driver;
 
+  cmd_can_packet_t  packet;
   cmd_can_packet_t  rx_packet;
   cmd_can_packet_t  tx_packet;
 } cmd_can_t;
@@ -79,6 +80,7 @@ typedef struct
 void cmdCanInit(cmd_can_t *p_cmd, cmd_can_driver_t *p_driver);
 bool cmdCanOpen(cmd_can_t *p_cmd);
 bool cmdCanClose(cmd_can_t *p_cmd);
+bool cmdCanIsBusy(cmd_can_t *p_cmd);
 bool cmdCanReceivePacket(cmd_can_t *p_cmd);
 bool cmdCanSendCmd(cmd_can_t *p_cmd, CmdCanType_t type, CmdCanCmd_t cmd, uint32_t addr, uint8_t *p_data, uint32_t length);
 bool cmdCanSendCmdPacket(cmd_can_t *p_cmd, cmd_can_packet_t *p_packet);

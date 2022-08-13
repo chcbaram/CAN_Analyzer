@@ -185,6 +185,7 @@ void cliCmd(cli_args_t *args)
   {
     uint32_t pre_time;
     uint32_t tx_cnt = 0;
+    uint32_t sent_len = 0;
 
     while(cliKeepLoop())
     {
@@ -194,8 +195,8 @@ void cliCmd(cli_args_t *args)
         logPrintf("tx : %d KB/s\n", tx_cnt/1024);
         tx_cnt = 0;
       }
-      cdcWrite((uint8_t *)"123456789012345678901234567890\n", 31);
-      tx_cnt += 31;
+      sent_len = cdcWrite((uint8_t *)"123456789012345678901234567890\n", 31);
+      tx_cnt += sent_len;
     }
     cliPrintf("\x1B[%dB", 2);
 

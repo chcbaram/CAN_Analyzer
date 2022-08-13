@@ -22,19 +22,28 @@ uint32_t cli_baud   = 115200;
 
 
 static void cliThread(void const *argument);;
-
+static bool cliThreadBegin(thread_t *p_thread);
 
 
 
 
 bool cliThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = cliThreadBegin;
 
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool cliThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
   osThreadDef(cliThread, cliThread, _HW_DEF_RTOS_THREAD_PRI_CLI, 0, _HW_DEF_RTOS_THREAD_MEM_CLI);
   if (osThreadCreate(osThread(cliThread), NULL) != NULL)
@@ -47,7 +56,7 @@ bool cliThreadInit(thread_t *p_thread)
     logPrintf("cliThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }
@@ -58,8 +67,6 @@ void cliThread(void const *argument)
 
 
   cliOpen(_DEF_UART_CLI, cli_baud);
-  canOpen(_DEF_CAN1, CAN_NORMAL, CAN_CLASSIC, CAN_1M, CAN_2M);
-  canOpen(_DEF_CAN2, CAN_NORMAL, CAN_CLASSIC, CAN_1M, CAN_2M);
 
   while(1)
   {

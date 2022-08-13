@@ -19,7 +19,9 @@ static thread_t *thread = NULL;
 
 
 static void infoThread(void const *argument);
+static bool infoThreadBegin(thread_t *p_thread);
 static bool infoEvent(Event_t event);
+
 static void cliInfo(cli_args_t *args);
 
 
@@ -28,14 +30,24 @@ static void cliInfo(cli_args_t *args);
 
 bool infoThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = infoThreadBegin;
   thread->onEvent = infoEvent;
 
   cliAdd("info", cliInfo);
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool infoThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
   osThreadDef(infoThread, infoThread, _HW_DEF_RTOS_THREAD_PRI_INFO, 0, _HW_DEF_RTOS_THREAD_MEM_INFO);
   if (osThreadCreate(osThread(infoThread), NULL) != NULL)
@@ -48,7 +60,7 @@ bool infoThreadInit(thread_t *p_thread)
     logPrintf("infoThread \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }
@@ -57,8 +69,6 @@ void infoThread(void const *argument)
 {
   (void)argument;
   static uint32_t pre_heartbeat[THREAD_ID_MAX];
-
-  thread->is_start = true;
 
 
   while(1)

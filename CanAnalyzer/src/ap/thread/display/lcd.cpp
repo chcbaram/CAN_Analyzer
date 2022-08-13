@@ -17,11 +17,13 @@ namespace ap
 static const char *thread_name = "lcd         ";
 static thread_t *thread = NULL;
 
-uint32_t can_rx_cnt[2] = {0, };
-uint32_t can_tx_cnt[2] = {0, };
-
+static uint32_t can_rx_cnt[2] = {0, };
+static uint32_t can_tx_cnt[2] = {0, };
+static uint8_t can_rx_on_time[2] = {0, };
+static uint8_t can_tx_on_time[2] = {0, };
 
 static void lcdThread(void const *argument);;
+static bool lcdThreadBegin(thread_t *p_thread);
 
 static void updateTitle(void);
 static void updateCanInfo(void);
@@ -32,12 +34,22 @@ static void updateUsbInfo(void);
 
 bool lcdThreadInit(thread_t *p_thread)
 {
-  bool ret = false;
+  bool ret = true;
 
   thread = p_thread;
 
   thread->name = thread_name;
+  thread->begin = lcdThreadBegin;
 
+
+  p_thread->is_init = ret;
+
+  return ret;
+}
+
+bool lcdThreadBegin(thread_t *p_thread)
+{
+  bool ret = false;
 
   osThreadDef(lcdThread, lcdThread, _HW_DEF_RTOS_THREAD_PRI_LCD, 0, _HW_DEF_RTOS_THREAD_MEM_LCD);
   if (osThreadCreate(osThread(lcdThread), NULL) != NULL)
@@ -50,7 +62,7 @@ bool lcdThreadInit(thread_t *p_thread)
     logPrintf("lcdThread  \t\t: Fail\r\n");
   }
 
-  p_thread->is_init = ret;
+  p_thread->is_begin = ret;
 
   return ret;
 }
@@ -99,11 +111,20 @@ void updateCanInfo(void)
     lcdDrawRect(8*6+2,  o_y[i]+1, 10, 12, yellow);
     lcdDrawRect(8*10+2, o_y[i]+1, 10, 12, yellow);
 
-    if (can_rx_cnt[i] != canGetRxCount(i))
+    if (can_rx_cnt[i] != canGetRxCount(i) && can_rx_on_time[i] == 0)
+      can_rx_on_time[i] = 2;
+    if (can_rx_on_time[i] >= 2)    
       lcdDrawFillRect(8*6+2, o_y[i]+1, 10, 12, yellow);
-
-    if (can_tx_cnt[i] != canGetTxCount(i))
+    
+    if (can_tx_cnt[i] != canGetTxCount(i) && can_tx_on_time[i] == 0)
+      can_tx_on_time[i] = 2;
+    if (can_tx_on_time[i] >= 2)
       lcdDrawFillRect(8*10+2, o_y[i]+1, 10, 12, yellow);
+
+    if (can_rx_on_time[i] > 0)
+      can_rx_on_time[i]--;
+    if (can_tx_on_time[i] > 0)
+      can_tx_on_time[i]--;
 
     can_rx_cnt[i] = canGetRxCount(i);
     can_tx_cnt[i] = canGetTxCount(i);

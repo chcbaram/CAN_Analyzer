@@ -13,7 +13,7 @@
 #include "bsp.h"
 
 
-#define _DEF_FIRMWATRE_VERSION    "V211211R2"
+#define _DEF_FIRMWATRE_VERSION    "V211213R1"
 #define _DEF_BOARD_NAME           "CanAnalyzer"
 
 
@@ -29,6 +29,7 @@
 #define _HW_DEF_RTOS_THREAD_PRI_LCD           osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_CAN_BUS       osPriorityNormal
 #define _HW_DEF_RTOS_THREAD_PRI_CMD_BUS       osPriorityNormal
+#define _HW_DEF_RTOS_THREAD_PRI_USB_BUS       osPriorityNormal
 
 #define _HW_DEF_RTOS_THREAD_MEM_MAIN          _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CLI           _HW_DEF_RTOS_MEM_SIZE( 6*1024)
@@ -38,7 +39,7 @@
 #define _HW_DEF_RTOS_THREAD_MEM_LCD           _HW_DEF_RTOS_MEM_SIZE( 1*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CAN_BUS       _HW_DEF_RTOS_MEM_SIZE( 2*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_CMD_BUS       _HW_DEF_RTOS_MEM_SIZE( 1*1024)
-
+#define _HW_DEF_RTOS_THREAD_MEM_USB_BUS       _HW_DEF_RTOS_MEM_SIZE(    256)
 
 
 #define _USE_HW_ESP32
@@ -64,7 +65,7 @@
 
 #define _USE_HW_CAN
 #define      HW_CAN_MAX_CH          2
-#define      HW_CAN_MSG_RX_BUF_MAX  16
+#define      HW_CAN_MSG_RX_BUF_MAX  32
 
 #define _USE_HW_LOG
 #define      HW_LOG_CH              _DEF_UART1
@@ -72,7 +73,7 @@
 #define      HW_LOG_LIST_BUF_MAX    1024
 
 #define _USE_HW_CLI
-#define      HW_CLI_CMD_LIST_MAX    16
+#define      HW_CLI_CMD_LIST_MAX    32
 #define      HW_CLI_CMD_NAME_MAX    16
 #define      HW_CLI_LINE_HIS_MAX    4
 #define      HW_CLI_LINE_BUF_MAX    64
@@ -110,6 +111,11 @@
 #define _DEF_UART_USB               _DEF_UART2
 #define _DEF_UART_ESP_BOOT          _DEF_UART3
 #define _DEF_UART_ESP_UART          _DEF_UART4
+
+#define _DEF_LED_CAN1               _DEF_LED1
+#define _DEF_LED_CAN2               _DEF_LED2
+#define _DEF_LED_MODE               _DEF_LED3
+#define _DEF_LED_RUN                _DEF_LED4
 
 
 #define _PIN_GPIO_ESP_RST           2
